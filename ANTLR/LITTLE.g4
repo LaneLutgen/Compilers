@@ -13,7 +13,7 @@ KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' |
 		  'RETURN' | 'INT' | 'VOID' | 'STRING' |
 		  'FLOAT';
 
-IDENTIFIER : [a-z][a-z0-9]*;
+IDENTIFIER : [a-zA-Z][a-zA-Z0-9]*;
 
 STRINGLITERAL : '"' StringCharacters? '"' ;
 
