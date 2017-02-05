@@ -31,6 +31,6 @@ fragment
 StringCharacters : (Escape | ~('\\' | '"'))* ;
 
 fragment
-Escape : '\\' ('\\' | '"');
+Escape : '\\' ([a-z] | '\\' | '"');
      
 WS : [ \t\r\n]+ -> skip;
