@@ -1,5 +1,4 @@
 package generated;
-
 // Generated from LITTLE.g4 by ANTLR 4.6
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
