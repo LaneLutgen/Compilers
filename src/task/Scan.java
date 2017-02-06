@@ -42,11 +42,16 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
     
     // =============== Globals ============================
     private FilePath input;
+    private String outputString;
     
     // =============== Methods ============================
     @Override
+    /**
+     * Run the Scanner task on a given FilePath, output a TokenSet
+     */
     public TokenSet doTask(FilePath inputIn) {
         input = inputIn;
+        outputString = "";
         
         try
         {
@@ -61,6 +66,7 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
             // enumerated value. Note: The 'EOF' token has a value
             // of -1, and all other reules are enumerated from 0.
             Vocabulary vocab = lexer.getVocabulary();
+            TokenSet output = new TokenSet(vocab);
 
             // A simple loop that prints out all token symbols and
             // their literal values. This is not quite set up as you
@@ -70,29 +76,48 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
             do 
             {
               token = lexer.nextToken();
-              System.out.println("\t" + vocab.getSymbolicName(token.getType()) +
-                                 "\t\t" + token.getText());
-            } while (token.getType() != Token.EOF);
-              //Run antlr on program to generate tokens
-
+              printToken(vocab, token);
+              
               //Write tokens to an output TokenSet object
+              output.addToken(token);
+              
+            } while (token.getType() != Token.EOF);
+            //Run antlr on program to generate tokens
+            
+            return output;
         }
         catch(Exception e)
         {
-                System.out.println("Bad things happened");
+                System.err.println("\n\n\nScanner error!\n" + e.getMessage() + "\n\n\n");
         }
-        
-        return new TokenSet();
+        return null;
     }
     
     @Override
+    /**
+     * Access the private input object of this task
+     */
     public FilePath getInputObject() {
-        
         return input;
     }
     
     @Override
+    /**
+     * Reprint total console output of this task
+     */
     public void printOutput() {
-        
+        System.out.println(outputString);
+    }
+    
+    /**
+     * Print token name and text to console
+     * @param vocab
+     * @param token 
+     */
+    private void printToken(Vocabulary vocab, Token token) {
+        outputString += ("\t" + vocab.getSymbolicName(token.getType()) +
+                                 "\t\t" + token.getText());
+        System.out.println("\t" + vocab.getSymbolicName(token.getType()) +
+                                 "\t\t" + token.getText());
     }
 }

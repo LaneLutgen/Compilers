@@ -23,6 +23,10 @@
  */
 package object;
 
+import java.util.ArrayList;
+import org.antlr.v4.runtime.Token;
+import org.antlr.v4.runtime.Vocabulary;
+
 /**
  *
  * @author matthewrohrlach
@@ -30,23 +34,65 @@ package object;
 public class TokenSet extends ObjectTemplate{
     
     // ============== Globals ====================
-    
+    private final ArrayList<Token> tokenList;
+    private final Vocabulary vocabulary;
     
     // ============== Constructors ===============
-    public TokenSet() {
-        
+    public TokenSet(Vocabulary vocabularyIn) {
+        vocabulary = vocabularyIn;
+        tokenList = new ArrayList<>();
     }
     
     
     // ============== Methods ====================
-    public String getData() {
-        
-        // To-do: Implement token retrieval in some way
-        return "";
+    
+    /**
+     * Add given token to end of list
+     * @param tokenToAdd 
+     */
+    public void addToken(Token tokenToAdd) {
+        tokenList.add(tokenToAdd);
+    }
+    
+    /**
+     * Access list of token objects
+     * @return 
+     */
+    public ArrayList<Token> getData() {
+        return this.tokenList;
+    }
+    
+    /**
+     * Retrieve specified token index from tokenList
+     * @param index
+     * @return 
+     */
+    public Token getTokenAtIndex(int index) {
+        try {
+            return tokenList.get(index);
+        } catch (Exception e) {
+            System.out.println("No token at that index!");
+            return null;
+        }
+    }
+    
+    /**
+     * Test if tokenList contains specified token
+     * @param searchToken
+     * @return 
+     */
+    public boolean hasToken(Token searchToken) {
+        return tokenList.contains(searchToken);
     }
     
     @Override
+    /**
+     * Print every token to console
+     */
     public void printData() {
-        
+        for (Token token : tokenList) {
+            System.out.println("\t" + vocabulary.getSymbolicName(token.getType()) +
+                                 "\t\t" + token.getText());
+        }
     }
 }
