@@ -48,7 +48,7 @@ public class Main {
             filePath = args[0];
         }
         else {
-            filePath = "inputs/fibonacci.micro";
+            filePath = "Step1/inputs/fibonacci.micro";
         }
         Driver driver = new Driver(filePath);
     }
