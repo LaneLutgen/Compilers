@@ -43,12 +43,12 @@ public class Main {
     // Non-static instance of main
     public void go(String[] args) {
         
-        String filePath;
+        String filePath = null;
         if (args.length > 0) {
             filePath = args[0];
         }
         else {
-            filePath = "Step1/inputs/fibonacci.micro";
+            //filePath = "Step1/inputs/fibonacci.micro";
         }
         Driver driver = new Driver(filePath);
     }

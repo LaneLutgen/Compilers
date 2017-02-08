@@ -80,14 +80,14 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
             outputPath = outputPath.substring(0, outputPath.lastIndexOf("."));
             outputPath = outputPath.replaceFirst("inputs", "outputs");
             outputPath = outputPath.replaceAll("[.]*", "") + ".out";
-            FileWriter fWriter = new FileWriter(outputPath);
-            BufferedWriter bWriter = new BufferedWriter(fWriter);
+            //FileWriter fWriter = new FileWriter(outputPath);
+            //BufferedWriter bWriter = new BufferedWriter(fWriter);
             do 
             {
               token = lexer.nextToken();
               if (token.getType() != Token.EOF) {
-                printToken(vocab, token);
-                bWriter.write("Token Type: " + vocab.getSymbolicName(token.getType()) +
+                //printToken(vocab, token);
+                System.out.print("Token Type: " + vocab.getSymbolicName(token.getType()) +
                                    "\nValue: " + token.getText() + "\n");
 
                 //Write tokens to an output TokenSet object
@@ -97,8 +97,8 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
             } while (token.getType() != Token.EOF);
             //Run antlr on program to generate tokens
             
-            bWriter.close();
-            fWriter.close();
+            //bWriter.close();
+            //fWriter.close();
             return output;
         }
         catch(Exception e)
