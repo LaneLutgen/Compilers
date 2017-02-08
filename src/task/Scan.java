@@ -24,8 +24,10 @@
 package task;
 
 import generated.LITTLELexer;
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileWriter;
 import object.FilePath;
 import object.TokenSet;
 import org.antlr.v4.runtime.ANTLRInputStream;
@@ -73,17 +75,30 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
             // want for the grading script - you will need to change
             // the format a bit.
             Token token = null;
+            
+            String outputPath = input.getData();
+            outputPath = outputPath.substring(0, outputPath.lastIndexOf("."));
+            outputPath = outputPath.replaceFirst("inputs", "outputs");
+            outputPath = outputPath.replaceAll("[.]*", "") + ".out";
+            FileWriter fWriter = new FileWriter(outputPath);
+            BufferedWriter bWriter = new BufferedWriter(fWriter);
             do 
             {
               token = lexer.nextToken();
-              printToken(vocab, token);
-              
-              //Write tokens to an output TokenSet object
-              output.addToken(token);
+              if (token.getType() != Token.EOF) {
+                printToken(vocab, token);
+                bWriter.write("Token Type: " + vocab.getSymbolicName(token.getType()) +
+                                   "\nValue: " + token.getText() + "\n");
+
+                //Write tokens to an output TokenSet object
+                output.addToken(token);
+              }
               
             } while (token.getType() != Token.EOF);
             //Run antlr on program to generate tokens
             
+            bWriter.close();
+            fWriter.close();
             return output;
         }
         catch(Exception e)

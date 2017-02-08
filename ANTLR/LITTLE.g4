@@ -6,6 +6,7 @@ grammar LITTLE;
 
 tokens: .* EOF;
 
+
 KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' |
 		  'FUNCTION' | 'READ' | 'WRITE' |
 		  'IF' | 'ELSE' | 'ENDIF' |
@@ -23,14 +24,17 @@ OPERATOR : ':=' | '+' | '-' | '*'
 			    | ')' | ';' | ','
 			    | '<='| '>=';
 			    
+COMMENT : '--' ~( '\r' | '\n')* -> skip;
+
+FLOATLITERAL : [0-9]*'.'[0-9]+;
+		
 INTLITERAL : [0-9]+;
 			    
-COMMENT : '--' StringCharacters?;
 
 fragment
 StringCharacters : (Escape | ~('\\' | '"'))* ;
 
 fragment
 Escape : '\\' ([a-z] | '\\' | '"');
-     
+
 WS : [ \t\r\n]+ -> skip;

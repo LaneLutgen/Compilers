@@ -1,4 +1,5 @@
 package generated;
+
 // Generated from LITTLE.g4 by ANTLR 4.6
 import org.antlr.v4.runtime.atn.*;
 import org.antlr.v4.runtime.dfa.DFA;
@@ -17,8 +18,8 @@ public class LITTLEParser extends Parser {
 	protected static final PredictionContextCache _sharedContextCache =
 		new PredictionContextCache();
 	public static final int
-		KEYWORD=1, IDENTIFIER=2, STRINGLITERAL=3, OPERATOR=4, INTLITERAL=5, COMMENT=6, 
-		WS=7;
+		KEYWORD=1, IDENTIFIER=2, STRINGLITERAL=3, OPERATOR=4, COMMENT=5, FLOATLITERAL=6, 
+		INTLITERAL=7, WS=8;
 	public static final int
 		RULE_tokens = 0;
 	public static final String[] ruleNames = {
@@ -28,8 +29,8 @@ public class LITTLEParser extends Parser {
 	private static final String[] _LITERAL_NAMES = {
 	};
 	private static final String[] _SYMBOLIC_NAMES = {
-		null, "KEYWORD", "IDENTIFIER", "STRINGLITERAL", "OPERATOR", "INTLITERAL", 
-		"COMMENT", "WS"
+		null, "KEYWORD", "IDENTIFIER", "STRINGLITERAL", "OPERATOR", "COMMENT", 
+		"FLOATLITERAL", "INTLITERAL", "WS"
 	};
 	public static final Vocabulary VOCABULARY = new VocabularyImpl(_LITERAL_NAMES, _SYMBOLIC_NAMES);
 
@@ -106,7 +107,7 @@ public class LITTLEParser extends Parser {
 			setState(5);
 			_errHandler.sync(this);
 			_la = _input.LA(1);
-			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << KEYWORD) | (1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPERATOR) | (1L << INTLITERAL) | (1L << COMMENT) | (1L << WS))) != 0)) {
+			while ((((_la) & ~0x3f) == 0 && ((1L << _la) & ((1L << KEYWORD) | (1L << IDENTIFIER) | (1L << STRINGLITERAL) | (1L << OPERATOR) | (1L << COMMENT) | (1L << FLOATLITERAL) | (1L << INTLITERAL) | (1L << WS))) != 0)) {
 				{
 				{
 				setState(2);
@@ -133,7 +134,7 @@ public class LITTLEParser extends Parser {
 	}
 
 	public static final String _serializedATN =
-		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\t\r\4\2\t\2\3\2\7"+
+		"\3\u0430\ud6d1\u8206\uad2d\u4417\uaef1\u8d80\uaadd\3\n\r\4\2\t\2\3\2\7"+
 		"\2\6\n\2\f\2\16\2\t\13\2\3\2\3\2\3\2\2\2\3\2\2\2\f\2\7\3\2\2\2\4\6\13"+
 		"\2\2\2\5\4\3\2\2\2\6\t\3\2\2\2\7\5\3\2\2\2\7\b\3\2\2\2\b\n\3\2\2\2\t\7"+
 		"\3\2\2\2\n\13\7\2\2\3\13\3\3\2\2\2\3\7";

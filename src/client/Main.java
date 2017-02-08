@@ -37,13 +37,19 @@ public class Main {
      */
     public static void main(String[] args) {
         
-        new Main().go();
+        new Main().go(args);
     }
     
     // Non-static instance of main
-    public void go() {
+    public void go(String[] args) {
         
-        String filePath = "inputs/fibonacci.micro";
+        String filePath;
+        if (args.length > 0) {
+            filePath = args[0];
+        }
+        else {
+            filePath = "inputs/fibonacci.micro";
+        }
         Driver driver = new Driver(filePath);
     }
 }
