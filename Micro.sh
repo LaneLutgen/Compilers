@@ -1,0 +1,19 @@
+#!/bin/sh
+which java
+
+THE_CLASSPATH=
+PROGRAM_NAME=Main.java
+cd src
+for i in `ls ../ANTLR/*.jar`
+  do
+  THE_CLASSPATH=${THE_CLASSPATH}:${i}
+done
+
+javac -classpath ".:${THE_CLASSPATH}" $PROGRAM_NAME
+
+if [ $? -eq 0 ]
+then
+  echo "compile worked!"
+fi
+
+sleep 5
