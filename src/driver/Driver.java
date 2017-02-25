@@ -51,6 +51,7 @@ public class Driver {
         // [Example progression from here]
         //Parse token set
         Parse parse = new Parse();
+        parse.setLexer(scan.lexer);
         ParseResult result = parse.doTask(tokenSet);
 //        
         // Run semantic routines
