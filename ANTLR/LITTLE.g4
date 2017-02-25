@@ -3,6 +3,11 @@ grammar LITTLE;
 /* To generate the ANTLR files run the following command
 		java -cp antlr-4.6-complete.jar org.antlr.v4.Tool LITTLE.g4
    This works as long as there are no syntax errors in the .g4 file */
+   
+/* Lexer rules are CAPITALIZED while parser rules are lowercaser */
+
+
+/* LEXER RULES */
 
 tokens: .* EOF;
 
@@ -38,3 +43,5 @@ fragment
 Escape : '\\' ([a-z] | '\\' | '"');
 
 WS : [ \t\r\n]+ -> skip;
+
+/* PARSER RULES */

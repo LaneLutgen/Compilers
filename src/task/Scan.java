@@ -46,6 +46,8 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
     private FilePath input;
     private String outputString;
     
+    public LITTLELexer lexer;
+    
     // =============== Methods ============================
     @Override
     /**
@@ -61,7 +63,7 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
             CharStream stream = new ANTLRInputStream(new FileInputStream(new File(input.getData())));
 
             // Create a new lexer on the specified 'CharStream'
-            LITTLELexer lexer = new LITTLELexer(stream);
+            lexer = new LITTLELexer(stream);
 
             // Scan types are enumerated, so we need to create a
             // 'Vocabulary' to lookup the symbol names from the
@@ -87,8 +89,8 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
               token = lexer.nextToken();
               if (token.getType() != Token.EOF) {
                 //printToken(vocab, token);
-                System.out.print("Token Type: " + vocab.getSymbolicName(token.getType()) +
-                                   "\nValue: " + token.getText() + "\n");
+                //System.out.print("Token Type: " + vocab.getSymbolicName(token.getType()) +
+                                   //"\nValue: " + token.getText() + "\n");
 
                 //Write tokens to an output TokenSet object
                 output.addToken(token);
