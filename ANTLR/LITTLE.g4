@@ -6,43 +6,6 @@ grammar LITTLE;
    
 /* Lexer rules are CAPITALIZED while parser rules are lowercaser */
 
-
-/* LEXER RULES */
-
-tokens: .* EOF;
-
-
-KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' |
-		  'FUNCTION' | 'READ' | 'WRITE' |
-		  'IF' | 'ELSE' | 'ENDIF' |
-		  'WHILE' | 'ENDWHILE' | 'CONTINUE' | 'BREAK' |
-		  'RETURN' | 'INT' | 'VOID' | 'STRING' |
-		  'FLOAT';
-
-IDENTIFIER : [a-zA-Z][a-zA-Z0-9]*;
-
-STRINGLITERAL : '"' StringCharacters? '"' ;
-
-OPERATOR : ':=' | '+' | '-' | '*' 
-			    | '/' | '=' | '!='
-			    | '<' | '>' | '(' 
-			    | ')' | ';' | ','
-			    | '<='| '>=';
-			    
-COMMENT : '--' ~( '\r' | '\n')* -> skip;
-
-FLOATLITERAL : [0-9]*'.'[0-9]+;
-		
-INTLITERAL : [0-9]+;		    
-
-fragment
-StringCharacters : (Escape | ~('\\' | '"'))* ;
-
-fragment
-Escape : '\\' ([a-z] | '\\' | '"');
-
-WS : [ \t\r\n]+ -> skip;
-
 /* PARSER RULES */
 
 /* Program */
@@ -105,3 +68,43 @@ compop : ;
 
 /* While statements */
 while_stmt : ;
+
+
+
+
+/* LEXER RULES */
+
+tokens: .* EOF;
+
+
+KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' |
+		  'FUNCTION' | 'READ' | 'WRITE' |
+		  'IF' | 'ELSE' | 'ENDIF' |
+		  'WHILE' | 'ENDWHILE' | 'CONTINUE' | 'BREAK' |
+		  'RETURN' | 'INT' | 'VOID' | 'STRING' |
+		  'FLOAT';
+
+IDENTIFIER : [a-zA-Z][a-zA-Z0-9]*;
+
+STRINGLITERAL : '"' StringCharacters? '"' ;
+
+OPERATOR : ':=' | '+' | '-' | '*' 
+			    | '/' | '=' | '!='
+			    | '<' | '>' | '(' 
+			    | ')' | ';' | ','
+			    | '<='| '>=';
+			    
+COMMENT : '--' ~( '\r' | '\n')* -> skip;
+
+FLOATLITERAL : [0-9]*'.'[0-9]+;
+		
+INTLITERAL : [0-9]+;		    
+
+fragment
+StringCharacters : (Escape | ~('\\' | '"'))* ;
+
+fragment
+Escape : '\\' ([a-z] | '\\' | '"');
+
+WS : [ \t\r\n]+ -> skip;
+
