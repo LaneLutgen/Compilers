@@ -49,9 +49,9 @@ public class Driver {
         TokenSet tokenSet = scan.doTask(filePath);
         
         // [Example progression from here]
-        // Parse token set
-//        Parse parse = new Parse();
-//        SyntaxTree syntaxTree = parse.doTask(tokenSet);
+        //Parse token set
+        Parse parse = new Parse();
+        ParseResult result = parse.doTask(tokenSet);
 //        
         // Run semantic routines
 //        SemanticRoutines semRout = new SemanticRoutines();
