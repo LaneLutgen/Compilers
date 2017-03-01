@@ -53,6 +53,7 @@ public class Driver {
         Parse parse = new Parse();
         parse.setLexer(scan.lexer);
         ParseResult result = parse.doTask(tokenSet);
+        result.printData();
 //        
         // Run semantic routines
 //        SemanticRoutines semRout = new SemanticRoutines();

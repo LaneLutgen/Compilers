@@ -41,6 +41,7 @@ public class Parse extends TaskTemplate<ParseResult, TokenSet>{
 	
 	private TokenSet input;
 	private LITTLELexer lexer;
+	private ParseResult result;
 	
 	@Override
 	public ParseResult doTask(TokenSet input) {
@@ -53,16 +54,19 @@ public class Parse extends TaskTemplate<ParseResult, TokenSet>{
 			//Pass the stream to the parser
 			LITTLEParser parser = new LITTLEParser(stream);
 			
-			//Determine if accepted or not
+			//Remove old error listener and add our custom one to print Accepted or Not
 			parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
 			CustomErrorListener errorListener = new CustomErrorListener();
 			parser.addErrorListener(errorListener);
+			
+			//Perform the parse
 			ProgramContext context = parser.program();
 			
-			ParseResult result = new ParseResult();
+			//Determine if accepted or not
+			result = new ParseResult();
 			result.Accepted = !errorListener.errorOccured;
 			
-			result.printData();
+			return result;
 		}
 		catch(Exception e){
 			System.err.println("\n\n\nParser error!\n" + e.getMessage() + "\n\n\n");
@@ -83,7 +87,7 @@ public class Parse extends TaskTemplate<ParseResult, TokenSet>{
 	@Override
 	public void printOutput() {
 		// TODO Auto-generated method stub
-		
+		result.printData();
 	}
 
 }
