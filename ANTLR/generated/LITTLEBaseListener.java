@@ -1,5 +1,4 @@
 package generated;
-
 // Generated from LITTLE.g4 by ANTLR 4.6
 
 import org.antlr.v4.runtime.ParserRuleContext;
@@ -12,6 +11,18 @@ import org.antlr.v4.runtime.tree.TerminalNode;
  * of the available methods.
  */
 public class LITTLEBaseListener implements LITTLEListener {
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void enterTokens(LITTLEParser.TokensContext ctx) { }
+	/**
+	 * {@inheritDoc}
+	 *
+	 * <p>The default implementation does nothing.</p>
+	 */
+	@Override public void exitTokens(LITTLEParser.TokensContext ctx) { }
 	/**
 	 * {@inheritDoc}
 	 *
@@ -516,18 +527,6 @@ public class LITTLEBaseListener implements LITTLEListener {
 	 * <p>The default implementation does nothing.</p>
 	 */
 	@Override public void exitEmpty(LITTLEParser.EmptyContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void enterTokens(LITTLEParser.TokensContext ctx) { }
-	/**
-	 * {@inheritDoc}
-	 *
-	 * <p>The default implementation does nothing.</p>
-	 */
-	@Override public void exitTokens(LITTLEParser.TokensContext ctx) { }
 
 	/**
 	 * {@inheritDoc}

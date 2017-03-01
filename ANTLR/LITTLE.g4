@@ -8,31 +8,33 @@ grammar LITTLE;
 
 /* PARSER RULES */
 
+tokens: .*? EOF;
+
 /* Program */
-program : 'PROGRAM' id 'BEGIN' pgm_body 'END';
+program : PROGRAM id BEGIN pgm_body END ;
 id : IDENTIFIER;
 pgm_body : decl func_declarations;
 decl : string_decl decl | var_decl decl | empty;
 
 /* Global String Declaration */
-string_decl : 'STRING' id ':=' str ;
+string_decl : STRING id ASSIGN str ;
 str : STRINGLITERAL;
 
 /* Variable Declaration */
 var_decl : var_type id_list;
-var_type : 'FLOAT' | 'INT';
-any_type : var_type | 'VOID';
+var_type : FLOAT | INT;
+any_type : var_type | VOID;
 id_list : id id_tail;
-id_tail : ',' id id_tail | empty;
+id_tail : COMMA id id_tail | empty;
 
 /* Function Paramater List */
 param_decl_list : param_decl param_decl_tail | empty;
 param_decl : var_type id;
-param_decl_tail : ',' param_decl param_decl_tail | empty;
+param_decl_tail : COMMA param_decl param_decl_tail | empty;
 
 /* Function Declarations */
 func_declarations : func_decl func_declarations | empty;
-func_decl : 'FUNCTION' any_type id '(' param_decl_list ')' 'BEGIN' func_body;
+func_decl : FUNCTION any_type id LEFT_PAREN param_decl_list RIGHT_PAREN BEGIN func_body;
 func_body : decl stmt_list;
 
 /* Statement List */
@@ -42,10 +44,10 @@ base_stmt : assign_stmt | read_stmt | write_stmt | return_stmt;
 
 /* Basic Statements */
 assign_stmt : assign_expr;
-assign_expr : id ':=' expr;
-read_stmt : 'READ' '(' id_list ')';
-write_stmt : 'WRITE' '(' id_list ')';
-return_stmt : 'RETURN' expr;
+assign_expr : id ASSIGN expr;
+read_stmt : READ LEFT_PAREN id_list RIGHT_PAREN;
+write_stmt : WRITE LEFT_PAREN id_list RIGHT_PAREN;
+return_stmt : RETURN expr;
 
 /* Expressions */
 expr : expr_prefix factor;
@@ -53,21 +55,21 @@ expr_prefix : expr_prefix factor addop | empty;
 factor : factor_prefix postfix_expr;
 factor_prefix : factor_prefix postfix_expr | empty;
 postfix_expr : primary | call_expr;
-call_expr : id '(' expr_list ')';
+call_expr : id LEFT_PAREN expr_list RIGHT_PAREN;
 expr_list : expr expr_list_tail | empty;
-expr_list_tail : ',' expr expr_list_tail | empty;
-primary : '(' expr ')' | id | INTLITERAL | FLOATLITERAL;
-addop : '+' | '-';
-mulop : '*' | '/';
+expr_list_tail : COMMA expr expr_list_tail | empty;
+primary : LEFT_PAREN expr RIGHT_PAREN | id | INTLITERAL | FLOATLITERAL;
+addop : ADD | SUBTRACT;
+mulop : MULT | DIVIDE;
 
 /* Complex Statements and Condition */ 
-if_stmt : 'IF' '(' cond ')' decl stmt_list else_part 'ENDIF';
-else_part : 'ELSE' decl stmt_list | empty;
+if_stmt : IF LEFT_PAREN cond RIGHT_PAREN decl stmt_list else_part ENDIF;
+else_part : ELSE decl stmt_list | empty;
 cond : expr compop expr;
-compop : '<' | '>' | '=' | '!=' | '<=' | '>=';
+compop : LESS_THAN | GREATER_THAN | EQUALS | NOT_EQUAL | GREATER_OR_EQUAL | LESS_OR_EQUAL;
 
 /* While statements */
-while_stmt : 'WHILE' '(' cond ')' decl stmt_list 'ENDWHILE';
+while_stmt : WHILE LEFT_PAREN cond RIGHT_PAREN decl stmt_list ENDWHILE;
 
 /* Empty rule */
 empty : ;
@@ -75,25 +77,75 @@ empty : ;
 
 /* LEXER RULES */
 
-tokens: .*? EOF;
+PROGRAM : 'PROGRAM';
 
+BEGIN : 'BEGIN';
 
-KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' |
-		  'FUNCTION' | 'READ' | 'WRITE' |
-		  'IF' | 'ELSE' | 'ENDIF' |
-		  'WHILE' | 'ENDWHILE' | 'CONTINUE' | 'BREAK' |
-		  'RETURN' | 'INT' | 'VOID' | 'STRING' |
-		  'FLOAT';
+END : 'END';
+
+FUNCTION : 'FUNCTION';
+
+READ : 'READ';
+
+WRITE : 'WRITE';
+
+IF : 'IF';
+
+ELSE : 'ELSE';
+
+ENDIF : 'ENDIF';
+
+WHILE : 'WHILE';
+
+ENDWHILE : 'ENDWHILE';
+
+CONTINUE : 'CONTINUE';
+
+BREAK : 'BREAK';
+
+RETURN : 'RETURN';
+
+INT : 'INT';
+
+VOID : 'VOID';
+
+STRING : 'STRING';
+
+FLOAT : 'FLOAT';
 
 IDENTIFIER : [a-zA-Z][a-zA-Z0-9]*;
 
 STRINGLITERAL : '"' StringCharacters? '"' ;
 
-OPERATOR : ':=' | '+' | '-' | '*' 
-			    | '/' | '=' | '!='
-			    | '<' | '>' | '(' 
-			    | ')' | ';' | ','
-			    | '<='| '>=';
+ASSIGN : ':=';
+
+ADD : '+';
+
+SUBTRACT : '-';
+
+MULT : '*';
+
+DIVIDE : '/';
+
+EQUALS : '=';
+
+NOT_EQUAL : '!=';
+
+LESS_THAN : '<';
+
+GREATER_THAN : '>';
+
+LEFT_PAREN : '(';
+
+RIGHT_PAREN : ')';
+
+SEMI_COLON : ';';
+
+COMMA : ',';
+
+LESS_OR_EQUAL : '<=';
+
+GREATER_OR_EQUAL : '>=';
 			    
 COMMENT : '--' ~( '\r' | '\n')* -> skip;
 

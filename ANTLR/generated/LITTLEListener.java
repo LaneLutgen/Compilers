@@ -1,5 +1,4 @@
 package generated;
-
 // Generated from LITTLE.g4 by ANTLR 4.6
 import org.antlr.v4.runtime.tree.ParseTreeListener;
 
@@ -8,6 +7,16 @@ import org.antlr.v4.runtime.tree.ParseTreeListener;
  * {@link LITTLEParser}.
  */
 public interface LITTLEListener extends ParseTreeListener {
+	/**
+	 * Enter a parse tree produced by {@link LITTLEParser#tokens}.
+	 * @param ctx the parse tree
+	 */
+	void enterTokens(LITTLEParser.TokensContext ctx);
+	/**
+	 * Exit a parse tree produced by {@link LITTLEParser#tokens}.
+	 * @param ctx the parse tree
+	 */
+	void exitTokens(LITTLEParser.TokensContext ctx);
 	/**
 	 * Enter a parse tree produced by {@link LITTLEParser#program}.
 	 * @param ctx the parse tree
@@ -428,14 +437,4 @@ public interface LITTLEListener extends ParseTreeListener {
 	 * @param ctx the parse tree
 	 */
 	void exitEmpty(LITTLEParser.EmptyContext ctx);
-	/**
-	 * Enter a parse tree produced by {@link LITTLEParser#tokens}.
-	 * @param ctx the parse tree
-	 */
-	void enterTokens(LITTLEParser.TokensContext ctx);
-	/**
-	 * Exit a parse tree produced by {@link LITTLEParser#tokens}.
-	 * @param ctx the parse tree
-	 */
-	void exitTokens(LITTLEParser.TokensContext ctx);
 }

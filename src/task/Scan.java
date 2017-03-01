@@ -98,7 +98,7 @@ public class Scan extends TaskTemplate<TokenSet,FilePath>{
               
             } while (token.getType() != Token.EOF);
             //Run antlr on program to generate tokens
-            
+            lexer.reset();
             //bWriter.close();
             //fWriter.close();
             return output;

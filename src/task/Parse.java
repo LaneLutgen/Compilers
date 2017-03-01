@@ -25,11 +25,16 @@ package task;
 
 import object.ParseResult;
 import object.TokenSet;
+import object.CustomErrorListener;
 
 import generated.LITTLEParser;
+import generated.LITTLEParser.ProgramContext;
 import generated.LITTLELexer;
 
+import org.antlr.runtime.RuleReturnScope;
+import org.antlr.v4.runtime.ANTLRErrorListener;
 import org.antlr.v4.runtime.CommonTokenStream;
+import org.antlr.v4.runtime.ConsoleErrorListener;
 import org.antlr.v4.runtime.TokenStream;
 
 public class Parse extends TaskTemplate<ParseResult, TokenSet>{
@@ -43,12 +48,21 @@ public class Parse extends TaskTemplate<ParseResult, TokenSet>{
 		
 		try{
 			//Create the token stream (not sure how to instantiate yet)
-			TokenStream stream = new CommonTokenStream(lexer);
+			CommonTokenStream stream = new CommonTokenStream(lexer);
 			
 			//Pass the stream to the parser
 			LITTLEParser parser = new LITTLEParser(stream);
 			
 			//Determine if accepted or not
+			parser.removeErrorListener(ConsoleErrorListener.INSTANCE);
+			CustomErrorListener errorListener = new CustomErrorListener();
+			parser.addErrorListener(errorListener);
+			ProgramContext context = parser.program();
+			
+			ParseResult result = new ParseResult();
+			result.Accepted = !errorListener.errorOccured;
+			
+			result.printData();
 		}
 		catch(Exception e){
 			System.err.println("\n\n\nParser error!\n" + e.getMessage() + "\n\n\n");
