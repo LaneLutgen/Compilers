@@ -77,6 +77,13 @@ empty : ;
 
 /* LEXER RULES */
 
+KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' |
+		  'FUNCTION' | 'READ' | 'WRITE' |
+		  'IF' | 'ELSE' | 'ENDIF' |
+		  'WHILE' | 'ENDWHILE' | 'CONTINUE' | 'BREAK' |
+		  'RETURN' | 'INT' | 'VOID' | 'STRING' |
+		  'FLOAT';
+
 PROGRAM : 'PROGRAM';
 
 BEGIN : 'BEGIN';
@@ -116,6 +123,12 @@ FLOAT : 'FLOAT';
 IDENTIFIER : [a-zA-Z][a-zA-Z0-9]*;
 
 STRINGLITERAL : '"' StringCharacters? '"' ;
+
+OPERATOR : ':=' | '+' | '-' | '*' 
+			    | '/' | '=' | '!='
+			    | '<' | '>' | '(' 
+			    | ')' | ';' | ','
+			    | '<='| '>=';
 
 ASSIGN : ':=';
 
