@@ -17,11 +17,11 @@ pgm_body : decl func_declarations;
 decl : string_decl decl | var_decl decl | empty;
 
 /* Global String Declaration */
-string_decl : STRING id ASSIGN str ;
+string_decl : STRING id ASSIGN str SEMI_COLON;
 str : STRINGLITERAL;
 
 /* Variable Declaration */
-var_decl : var_type id_list;
+var_decl : var_type id_list SEMI_COLON;
 var_type : FLOAT | INT;
 any_type : var_type | VOID;
 id_list : id id_tail;
@@ -43,11 +43,11 @@ stmt : base_stmt | if_stmt | while_stmt;
 base_stmt : assign_stmt | read_stmt | write_stmt | return_stmt;
 
 /* Basic Statements */
-assign_stmt : assign_expr;
+assign_stmt : assign_expr SEMI_COLON;
 assign_expr : id ASSIGN expr;
-read_stmt : READ LEFT_PAREN id_list RIGHT_PAREN;
-write_stmt : WRITE LEFT_PAREN id_list RIGHT_PAREN;
-return_stmt : RETURN expr;
+read_stmt : READ LEFT_PAREN id_list RIGHT_PAREN SEMI_COLON;
+write_stmt : WRITE LEFT_PAREN id_list RIGHT_PAREN SEMI_COLON;
+return_stmt : RETURN expr SEMI_COLON;
 
 /* Expressions */
 expr : expr_prefix factor;
