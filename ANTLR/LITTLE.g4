@@ -4,12 +4,12 @@ grammar LITTLE;
 		java -cp antlr-4.6-complete.jar org.antlr.v4.Tool LITTLE.g4
    This works as long as there are no syntax errors in the .g4 file */
    
-/* Lexer rules are CAPITALIZED while parser rules are lowercaser */
+/* Lexer rules are CAPITALIZED while parser rules are lowercase */
 
 /* PARSER RULES */
 
 /* Program */
-program : 'PROGRAM' id 'BEGIN' pgrm_body 'END';
+program : 'PROGRAM' id 'BEGIN' pgm_body 'END';
 id : IDENTIFIER;
 pgm_body : decl func_declarations;
 decl : string_decl decl | var_decl decl | empty;
@@ -38,7 +38,7 @@ func_body : decl stmt_list;
 /* Statement List */
 stmt_list : stmt stmt_list | empty;
 stmt : base_stmt | if_stmt | while_stmt;
-base_stmt : assign_stmr | read_stmt | write_stmt | return_stmt;
+base_stmt : assign_stmt | read_stmt | write_stmt | return_stmt;
 
 /* Basic Statements */
 assign_stmt : assign_expr;
@@ -51,7 +51,7 @@ return_stmt : 'RETURN' expr;
 expr : expr_prefix factor;
 expr_prefix : expr_prefix factor addop | empty;
 factor : factor_prefix postfix_expr;
-factor_prefix : factor_prefix postfix_expr;
+factor_prefix : factor_prefix postfix_expr | empty;
 postfix_expr : primary | call_expr;
 call_expr : id '(' expr_list ')';
 expr_list : expr expr_list_tail | empty;
@@ -62,12 +62,12 @@ mulop : '*' | '/';
 
 /* Complex Statements and Condition */ 
 if_stmt : 'IF' '(' cond ')' decl stmt_list else_part 'ENDIF';
-else_part : ELSE decl stmt_list | empty;
+else_part : 'ELSE' decl stmt_list | empty;
 cond : expr compop expr;
-compop : '<' | '>' | '=' | '!= | '<=' | '>=';
+compop : '<' | '>' | '=' | '!=' | '<=' | '>=';
 
 /* While statements */
-while_stmt : 'WHILE' ( cond ) decl stmt_list 'ENDWHILE';
+while_stmt : 'WHILE' '(' cond ')' decl stmt_list 'ENDWHILE';
 
 /* Empty rule */
 empty : ;
@@ -75,7 +75,7 @@ empty : ;
 
 /* LEXER RULES */
 
-tokens: .* EOF;
+tokens: .*? EOF;
 
 
 KEYWORD : 'PROGRAM' | 'BEGIN' | 'END' |
