@@ -53,7 +53,7 @@ return_stmt : RETURN expr SEMI_COLON;
 expr : expr_prefix factor;
 expr_prefix : expr_prefix factor addop | empty;
 factor : factor_prefix postfix_expr;
-factor_prefix : factor_prefix postfix_expr | empty;
+factor_prefix : factor_prefix postfix_expr mulop | empty;
 postfix_expr : primary | call_expr;
 call_expr : id LEFT_PAREN expr_list RIGHT_PAREN;
 expr_list : expr expr_list_tail | empty;
