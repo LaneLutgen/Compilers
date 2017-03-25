@@ -63,7 +63,7 @@ public class Parse extends TaskTemplate<ParseResult, TokenSet>{
 			ProgramContext context = parser.program();
 			
 			//Determine if accepted or not
-			result = new ParseResult();
+			result = new ParseResult(context);
 			result.Accepted = !errorListener.errorOccured;
 			
 			return result;

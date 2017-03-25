@@ -23,6 +23,8 @@
  */
 package driver;
 
+import java.util.ArrayList;
+
 import object.*;
 import task.*;
 
@@ -52,13 +54,13 @@ public class Driver {
         //Parse token set
         Parse parse = new Parse();
         parse.setLexer(scan.lexer);
-        ParseResult result = parse.doTask(tokenSet);
-        result.printData();
-//        
-        // Run semantic routines
-//        SemanticRoutines semRout = new SemanticRoutines();
-//        IR ir = semRout.doTask(syntaxTree);
-//        
+        ParseResult parseResult = parse.doTask(tokenSet);
+        //parseResult.printData();
+
+        SymbolTableFactory symTblFactory = new SymbolTableFactory();
+        ArrayList<SymbolTable> tables = symTblFactory.doTask(parseResult);
+        symTblFactory.printOutput();
+       
         // Optimize code
 //        Optimize optimize = new Optimize();
 //        ir = optimize.doTask(ir);

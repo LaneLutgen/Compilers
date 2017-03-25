@@ -21,33 +21,57 @@
  * OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
  * THE SOFTWARE.
  */
-package object;
+package task;
+
+import java.util.ArrayList;
+
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import generated.LITTLEParser.ProgramContext;
+import object.Listener;
+import object.ParseResult;
+import object.SymbolTable;
 
-public class ParseResult extends ObjectTemplate{
-	public boolean Accepted;
-	private final String acceptedString = "Accepted";
-	private final String rejectedString = "Not accepted";
-	
-	private ProgramContext context;
-	
-	public ParseResult(ProgramContext context)
-	{
-		this.context = context;
-	}
+public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, ParseResult>{
+
+	private ParseResult input;
+	private Listener parseListener;
+	private ArrayList<SymbolTable> symbolTables;
 	
 	@Override
-	public void printData() {
-		if(Accepted)
-			System.out.println(acceptedString);
-		else
-			System.out.println(rejectedString);
+	public ArrayList<SymbolTable> doTask(ParseResult input) {
+		try{
+			this.input = input;
+			parseListener = new Listener();
+			
+			ProgramContext context = input.getContext();
+			new ParseTreeWalker().walk(parseListener, context);
+			
+			symbolTables = parseListener.getSymbolTables();
+			
+			return symbolTables;
+		}
+		catch(Exception e){
+			System.err.println("\n\n\nSymbolTableFactory error!\n" + e.getMessage() + "\n\n\n");
+		}
+		return null;
 	}
-	
-	public ProgramContext getContext()
-	{
-		return context;
+
+	@Override
+	public ParseResult getInputObject() {
+		return input;
 	}
+
+	@Override
+	public void printOutput() {
+		if(symbolTables != null)
+		{
+			for(SymbolTable table: symbolTables)
+			{
+				System.out.println("Symbol table "+table.getName());
+			}
+		}
+	}
+
 
 }

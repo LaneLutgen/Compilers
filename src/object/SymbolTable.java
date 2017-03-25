@@ -23,31 +23,63 @@
  */
 package object;
 
-import generated.LITTLEParser.ProgramContext;
+import java.util.Dictionary;
+import java.util.Enumeration;
 
-public class ParseResult extends ObjectTemplate{
-	public boolean Accepted;
-	private final String acceptedString = "Accepted";
-	private final String rejectedString = "Not accepted";
+public class SymbolTable extends Dictionary<Object, Object>
+{
+	private String name;
 	
-	private ProgramContext context;
-	
-	public ParseResult(ProgramContext context)
+	public SymbolTable(String name)
 	{
-		this.context = context;
+		this.name = name;
+	}
+	
+	public String getName()
+	{
+		return name;
 	}
 	
 	@Override
-	public void printData() {
-		if(Accepted)
-			System.out.println(acceptedString);
-		else
-			System.out.println(rejectedString);
+	public Enumeration<Object> elements() {
+		// TODO Auto-generated method stub
+		return null;
 	}
-	
-	public ProgramContext getContext()
-	{
-		return context;
+
+	@Override
+	public Object get(Object key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public boolean isEmpty() {
+		// TODO Auto-generated method stub
+		return false;
+	}
+
+	@Override
+	public Enumeration<Object> keys() {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object put(Object key, Object value) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public Object remove(Object key) {
+		// TODO Auto-generated method stub
+		return null;
+	}
+
+	@Override
+	public int size() {
+		// TODO Auto-generated method stub
+		return 0;
 	}
 
 }
