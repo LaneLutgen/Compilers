@@ -23,10 +23,9 @@
  */
 package object;
 
-import java.util.Dictionary;
-import java.util.Enumeration;
+import java.util.HashMap;
 
-public class SymbolTable extends Dictionary<Object, Object>
+public class SymbolTable extends HashMap<Object, Object>
 {
 	private String name;
 	
@@ -39,47 +38,4 @@ public class SymbolTable extends Dictionary<Object, Object>
 	{
 		return name;
 	}
-	
-	@Override
-	public Enumeration<Object> elements() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object get(Object key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public boolean isEmpty() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-
-	@Override
-	public Enumeration<Object> keys() {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object put(Object key, Object value) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public Object remove(Object key) {
-		// TODO Auto-generated method stub
-		return null;
-	}
-
-	@Override
-	public int size() {
-		// TODO Auto-generated method stub
-		return 0;
-	}
-
 }

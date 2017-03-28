@@ -28,6 +28,8 @@ import java.util.Stack;
 
 import generated.LITTLEBaseListener;
 import generated.LITTLEParser;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 public class Listener extends LITTLEBaseListener
 {
@@ -43,8 +45,18 @@ public class Listener extends LITTLEBaseListener
 	@Override
 	public void enterFunc_decl(LITTLEParser.Func_declContext ctx)
 	{
-		//Object token = ctx.start;
-		tableStack.push(new SymbolTable("trying to figure out how to get function name"));
+            String funcName = "functionName";
+            String context = ctx.getText();
+            String regPattern = "[a-z0-9]";
+            Pattern pattern = Pattern.compile(regPattern);
+            Matcher matcher = pattern.matcher(context);
+            
+            if(matcher.find())
+            {
+                funcName = context.substring(matcher.start(), context.indexOf("("));
+            }
+            //Object token = ctx.start;
+            tableStack.push(new SymbolTable(funcName));
 	}
 	
 	/*

@@ -50,7 +50,6 @@ public class Driver {
         Scan scan = new Scan();
         TokenSet tokenSet = scan.doTask(filePath);
         
-        // [Example progression from here]
         //Parse token set
         Parse parse = new Parse();
         parse.setLexer(scan.lexer);
@@ -61,6 +60,7 @@ public class Driver {
         ArrayList<SymbolTable> tables = symTblFactory.doTask(parseResult);
         symTblFactory.printOutput();
        
+        // [Example progression from here]
         // Optimize code
 //        Optimize optimize = new Optimize();
 //        ir = optimize.doTask(ir);
