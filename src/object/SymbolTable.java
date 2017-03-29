@@ -31,6 +31,7 @@ import java.util.LinkedHashMap;
  * Test for a conflict before adding a mapping, to prevent conflicts.
  * Add a record after adding a mapping, to prevent conflicts.
  * Add every new SymbolKey to the keyList for future retrieval.
+ * 
  * @author Matthew Rohrlach, lanelutgen
  */
 

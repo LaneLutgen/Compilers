@@ -24,7 +24,7 @@
 package object;
 
 import java.util.ArrayList;
-import java.util.Stack;
+import java.util.LinkedList;
 
 import generated.LITTLEBaseListener;
 import generated.LITTLEParser;
@@ -36,8 +36,8 @@ public class Listener extends LITTLEBaseListener
 	//MAY OR MAY NOT NEED THIS
 	private ArrayList<SymbolTable> tableList = new ArrayList<SymbolTable>();
 	
-	/*Stack for storing symbol tables per scope*/
-	private Stack<SymbolTable> tableStack = new Stack<SymbolTable>();
+	/*LinkedList for storing symbol tables per scope*/
+	private LinkedList<SymbolTable> tableLinkedList = new LinkedList<SymbolTable>();
         
         // Track number of block tables
         private int blockCounter = 1;
@@ -56,7 +56,7 @@ public class Listener extends LITTLEBaseListener
             if(funcName != null)
             {
                 //Object token = ctx.start;
-                tableStack.push(new SymbolTable(funcName));
+                tableLinkedList.add(new SymbolTable(funcName));
             }
             else {
                 System.err.println("Null function name: " + context);
@@ -117,7 +117,7 @@ public class Listener extends LITTLEBaseListener
 	@Override
 	public void exitFunc_body(LITTLEParser.Func_bodyContext ctx)
 	{
-		tableList.add(tableStack.pop());
+		tableList.add(tableLinkedList.remove());
 	}
 	
 	/*
@@ -126,7 +126,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterIf_stmt(LITTLEParser.If_stmtContext ctx) 
 	{
-		tableStack.push(new SymbolTable("IF BLOCK"));
+		tableLinkedList.add(new SymbolTable("IF BLOCK"));
 	}
 
 	/*
@@ -135,7 +135,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void exitIf_stmt(LITTLEParser.If_stmtContext ctx) 
 	{
-		tableList.add(tableStack.pop());
+		tableList.add(tableLinkedList.remove());
 	}
 	
 	/*
@@ -144,7 +144,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterElse_part(LITTLEParser.Else_partContext ctx) 
 	{
-		tableStack.push(new SymbolTable("ELSE BLOCK"));
+		tableLinkedList.add(new SymbolTable("ELSE BLOCK"));
 	}
 	
 	/*
@@ -153,7 +153,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void exitElse_part(LITTLEParser.Else_partContext ctx)
 	{ 
-		tableList.add(tableStack.pop());
+		tableList.add(tableLinkedList.remove());
 	}
 	
 	/*
@@ -162,7 +162,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterWhile_stmt(LITTLEParser.While_stmtContext ctx) 
 	{ 
-		tableStack.push(new SymbolTable("BLOCK " + blockCounter));
+		tableLinkedList.add(new SymbolTable("BLOCK " + blockCounter));
                 blockCounter++;
 	}
 	
@@ -172,7 +172,7 @@ public class Listener extends LITTLEBaseListener
 	@Override
 	public void exitWhile_stmt(LITTLEParser.While_stmtContext ctx) 
 	{
-		tableList.add(tableStack.pop());
+		tableList.add(tableLinkedList.remove());
 	}
 	
 	/*
@@ -181,7 +181,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterProgram(LITTLEParser.ProgramContext ctx) 
 	{
-		tableStack.push(new SymbolTable("GLOBAL"));
+		tableLinkedList.add(new SymbolTable("GLOBAL"));
 	}
 
 	/*
@@ -190,7 +190,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void exitProgram(LITTLEParser.ProgramContext ctx) 
 	{ 
-		tableList.add(tableStack.pop());
+		tableList.add(tableLinkedList.remove());
 	}
 	
 	/*
@@ -199,8 +199,7 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterString_decl(LITTLEParser.String_declContext ctx)
 	{
-		SymbolTable curTable = tableStack.peek();
-                String context = ctx.getText();
+		String context = ctx.getText();
                 int numberOfDeclarations = 1;
                 
                 // Count number of separate variables to instantiate
@@ -245,7 +244,7 @@ public class Listener extends LITTLEBaseListener
             if (name != null)
             {
                 // Symbol table keys are strings that consist of name + type
-                SymbolTable curTable = tableStack.peek();
+                SymbolTable curTable = tableLinkedList.getLast();
                 if (!curTable.checkRecordsForConflict(name, type))
                 {
                     // Add record and copy of symbol key to table
@@ -324,7 +323,7 @@ public class Listener extends LITTLEBaseListener
             if (name != null)
             {
                 // Symbol table keys are strings that consist of name + type
-                SymbolTable curTable = tableStack.peek();
+                SymbolTable curTable = tableLinkedList.getLast();
                 if (!curTable.checkRecordsForConflict(name, type))
                 {
                     // Add record and copy of symbol key to table
