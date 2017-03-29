@@ -285,7 +285,10 @@ public class Listener extends LITTLEBaseListener
                 }
                 else
                 {
-                    System.out.println("DECLARATION ERROR: " + name);
+                    // Store declaration error in symbol table for later output.
+                    // These errors are stored as fake symbols so that they may be read in order during output printing.
+                    SymbolValue newError = new SymbolValue(null, "DECLARATION_ERROR");
+                    curTable.put("DECLARATION_ERROR" + name + ";;;", newError);
                 }
             }
             else {
@@ -352,7 +355,9 @@ public class Listener extends LITTLEBaseListener
                 }
                 else
                 {
-                    System.out.println("DECLARATION ERROR: " + name);
+                    // Store declaration error in symbol table for later output
+                    SymbolValue newError = new SymbolValue(null, "DECLARATION_ERROR");
+                    curTable.put("DECLARATION_ERROR" + name + ";;;", newError);
                 }
             }
             else {

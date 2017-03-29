@@ -75,20 +75,30 @@ public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, Par
                         for (Entry<String, SymbolValue> entry : table.entrySet())
                         {
                             SymbolValue entrySymbolValue = entry.getValue();
-                            String entryName = entry.getKey();
                             String entryType = entrySymbolValue.getType();
-                            String entryValue = entrySymbolValue.getValue();
-
-                            if (entryValue == null)
+                            String entryName = entry.getKey();
+                            if (!entryType.equals("DECLARATION_ERROR"))
                             {
-                                System.out.println("name " + entryName +
-                                        " type " + entryType);
+                                //Output stored symbols in table
+                                String entryValue = entrySymbolValue.getValue();
+
+                                if (entryValue == null)
+                                {
+                                    System.out.println("name " + entryName +
+                                            " type " + entryType);
+                                }
+                                else
+                                {
+                                    System.out.println("name " + entryName +
+                                            " type " + entryType +
+                                            " value " + entryValue);
+                                }
                             }
                             else
                             {
-                                System.out.println("name " + entryName +
-                                        " type " + entryType +
-                                        " value " + entryValue);
+                                // Output stored declaration errors
+                                entryName = entryName.substring(17, entryName.indexOf(";"));
+                                System.out.println("DECLARATION ERROR: " + entryName);
                             }
                         }
                         if (numberOfTables > 1)
