@@ -1,7 +1,7 @@
 /*
  * The MIT License
  *
- * Copyright 2017 Matthew Rohrlach.
+ * Copyright 2017 Matthew Rohrlach, lanelutgen.
  *
  * Permission is hereby granted, free of charge, to any person obtaining a copy
  * of this software and associated documentation files (the "Software"), to deal
@@ -27,10 +27,7 @@ import java.util.ArrayList;
 import java.util.LinkedHashMap;
 
 /**
- * This is an ordered hash map of SymbolKeys (name and type) to values.
- * Test for a conflict before adding a mapping, to prevent conflicts.
- * Add a record after adding a mapping, to prevent conflicts.
- * Add every new SymbolKey to the keyList for future retrieval.
+ * This is an ordered, linked hash map of variable names to SymbolValues (value + type).
  * 
  * @author Matthew Rohrlach, lanelutgen
  */
