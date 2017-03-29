@@ -286,9 +286,13 @@ public class Listener extends LITTLEBaseListener
                     // Map new symbol key to value
                     curTable.put(newKey, value);
                 }
+                else
+                {
+                    System.out.println("DECLARATION ERROR: " + name);
+                }
             }
             else {
-                System.out.println("Null variable name: " + context);
+                System.err.println("Null variable name: " + context);
             }
         }
 
@@ -351,6 +355,10 @@ public class Listener extends LITTLEBaseListener
                     
                     // Map new symbol key to value
                     curTable.put(newKey, value);
+                }
+                else
+                {
+                    System.out.println("DECLARATION ERROR: " + name);
                 }
             }
             else {
