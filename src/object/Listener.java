@@ -41,6 +41,9 @@ public class Listener extends LITTLEBaseListener
         
         // Track number of block tables
         private int blockCounter = 1;
+        
+        private boolean skipNextIfBlockRemove = false;
+        private boolean skipNextElseBlockRemove = false;
 	
 	/*
 	 * Entering a function, define a new scope
@@ -50,7 +53,7 @@ public class Listener extends LITTLEBaseListener
 	{
             // Search for function name
             String context = ctx.getText();
-            String funcName = this.getVariableNameFromContext(context);
+            String funcName = this.getFunctionNameFromContext(context);
             
             // Create associated table
             if(funcName != null)
@@ -126,7 +129,14 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterIf_stmt(LITTLEParser.If_stmtContext ctx) 
 	{
-		tableLinkedList.add(new SymbolTable("IF BLOCK"));
+            if (!(ctx == null || ctx.getText().isEmpty())) 
+            {
+                tableLinkedList.add(new SymbolTable("BLOCK " + blockCounter));
+                    blockCounter++;
+            }
+            else {
+                skipNextIfBlockRemove = true;
+            }
 	}
 
 	/*
@@ -135,7 +145,14 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void exitIf_stmt(LITTLEParser.If_stmtContext ctx) 
 	{
+            if (!skipNextIfBlockRemove)
+            {
 		tableList.add(tableLinkedList.remove());
+            }
+            else
+            {
+                skipNextIfBlockRemove = false;
+            }
 	}
 	
 	/*
@@ -144,7 +161,15 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterElse_part(LITTLEParser.Else_partContext ctx) 
 	{
-		tableLinkedList.add(new SymbolTable("ELSE BLOCK"));
+//		tableLinkedList.add(new SymbolTable("ELSE BLOCK"));
+            if (!(ctx == null || ctx.getText().isEmpty())) 
+            {
+                tableLinkedList.add(new SymbolTable("BLOCK " + blockCounter));
+                    blockCounter++;
+            }
+            else {
+                skipNextElseBlockRemove = true;
+            }
 	}
 	
 	/*
@@ -153,7 +178,14 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void exitElse_part(LITTLEParser.Else_partContext ctx)
 	{ 
+            if (!skipNextElseBlockRemove)
+            {
 		tableList.add(tableLinkedList.remove());
+            }
+            else
+            {
+                skipNextElseBlockRemove = false;
+            }
 	}
 	
 	/*
@@ -353,7 +385,38 @@ public class Listener extends LITTLEBaseListener
         }
         
         /**
-         * Take context and extract a variable/function name
+         * Take context and extract a function name
+         * @param context
+         * @return 
+         */
+        public String getFunctionNameFromContext(String context)
+        {
+            // Remove "FUNCTION" and return type from context
+            String regPattern = "FUNCTIONINT|FUNCTIONSTRING|FUNCTIONFLOAT|FUNCTIONVOID";
+            Pattern pattern = Pattern.compile(regPattern);
+            Matcher matcher = pattern.matcher(context);
+            
+            if(matcher.find())
+            {
+                context = context.substring(matcher.end());
+            }
+            
+            // Search for one or more lowercase letters and digits in succession (variable names)
+            regPattern = "[a-zA-Z0-9]+";
+            pattern = Pattern.compile(regPattern);
+            matcher = pattern.matcher(context);
+            
+            if(matcher.find())
+            {
+                String funcName = context.substring(matcher.start(), matcher.end());
+                return funcName;
+            }
+            
+            return null;
+        }
+        
+        /**
+         * Take context and extract a variable name
          * @param context
          * @return 
          */
@@ -366,8 +429,8 @@ public class Listener extends LITTLEBaseListener
             
             if(matcher.find())
             {
-                String funcName = context.substring(matcher.start(), matcher.end());
-                return funcName;
+                String varName = context.substring(matcher.start(), matcher.end());
+                return varName;
             }
             
             return null;
