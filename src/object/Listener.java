@@ -38,6 +38,9 @@ public class Listener extends LITTLEBaseListener
 	
 	/*Stack for storing symbol tables per scope*/
 	private Stack<SymbolTable> tableStack = new Stack<SymbolTable>();
+        
+        // Track number of block tables
+        private int blockCounter = 1;
 	
 	/*
 	 * Entering a function, define a new scope
@@ -45,18 +48,67 @@ public class Listener extends LITTLEBaseListener
 	@Override
 	public void enterFunc_decl(LITTLEParser.Func_declContext ctx)
 	{
-            String funcName = "functionName";
+            // Search for function name
             String context = ctx.getText();
-            String regPattern = "[a-z0-9]";
-            Pattern pattern = Pattern.compile(regPattern);
-            Matcher matcher = pattern.matcher(context);
+            String funcName = this.getVariableNameFromContext(context);
             
-            if(matcher.find())
+            // Create associated table
+            if(funcName != null)
             {
-                funcName = context.substring(matcher.start(), context.indexOf("("));
+                //Object token = ctx.start;
+                tableStack.push(new SymbolTable(funcName));
             }
-            //Object token = ctx.start;
-            tableStack.push(new SymbolTable(funcName));
+            else {
+                System.err.println("Null function name: " + context);
+            }
+            
+            
+            // Continue declarations (arguments to add to table)
+            context = context.substring(context.indexOf("(")+1, context.indexOf(")"));
+            
+            boolean done = false;
+            while (!done)
+            {
+                // Search for capitalized variable name
+                String type = this.getVariableTypeFromContext(context);
+                if (type != null)
+                {
+                    // Use type to add variable to symbol table
+                    switch (type) 
+                    {
+                        case "INT":
+                        case "FLOAT":
+                            // Process int or float
+                            this.continueVar_decl(type, context);
+                            break;
+                        case "STRING":
+                            // Process string
+                            this.continueString_decl(type, context);
+                            break;
+                        default:
+                            // Unrecognized variable type
+                            System.err.println("Type \"" + type + "\" not recognized!");
+                            break;
+                    }
+                    
+                    // Check for further variables to add
+                    if (context.contains(",")) {
+                        
+                        // Delete portion of string that proceeds next comma
+                        context = context.substring(context.indexOf(",")+1);
+                    }
+                    else {
+                        // No further variables found
+                        done = true;
+                    }
+                }
+                
+                // No variables found at all means we're done
+                else
+                {
+                    done = true;
+                }
+            }
 	}
 	
 	/*
@@ -110,7 +162,8 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterWhile_stmt(LITTLEParser.While_stmtContext ctx) 
 	{ 
-		tableStack.push(new SymbolTable("WHILE BLOCK"));
+		tableStack.push(new SymbolTable("BLOCK " + blockCounter));
+                blockCounter++;
 	}
 	
 	/*
@@ -147,8 +200,79 @@ public class Listener extends LITTLEBaseListener
 	public void enterString_decl(LITTLEParser.String_declContext ctx)
 	{
 		SymbolTable curTable = tableStack.peek();
-		//TODO: Add to the symbol table
+                String context = ctx.getText();
+                int numberOfDeclarations = 1;
+                
+                // Count number of separate variables to instantiate
+                String tempContext = context;
+                while (tempContext.contains(","))
+                {
+                    numberOfDeclarations++;
+                    tempContext = tempContext.substring(tempContext.indexOf(",")+1);
+                }
+                
+                // Find variable type
+                String type = this.getVariableTypeFromContext(context);
+                
+                // Add variables to symbol table on top of stack
+                for (int i = 0; i < numberOfDeclarations; i++) {
+                    this.continueString_decl(type, context);
+                    if (context.contains(","))
+                    {
+                        context = context.substring(context.indexOf(",")+1);
+                    }
+                }
 	}
+        
+        /**
+         * Finish adding string symbol to top table from given context
+         * Takes in only first variable and value. DOES NOT LOOP ON ITS OWN.
+         * @param type
+         * @param context 
+         */
+        public void continueString_decl(String type, String context)
+        {
+            // Attempt to retrieve value (if applicable)
+            String value = null;
+            if (context.contains("=")) {
+                value = context.substring(
+//                        context.indexOf("\"")+1, context.lastIndexOf("\""));
+                        context.indexOf("=")+1, context.indexOf(";"));
+            }
+            
+            // Create symbol and add to table
+            String name = this.getVariableNameFromContext(context);
+            if (name != null)
+            {
+                // Symbol table keys are strings that consist of name + type
+                SymbolTable curTable = tableStack.peek();
+                if (!curTable.checkRecordsForConflict(name, type))
+                {
+                    // Add record and copy of symbol key to table
+                    curTable.addSymbolKeyRecord(name, type);
+                    SymbolKey newKey = new SymbolKey(name, type);
+                    
+                    // Map new symbol key to value
+                    curTable.put(newKey, value);
+                }
+            }
+            else {
+                System.out.println("Null variable name: " + context);
+            }
+            
+            // Print symbol
+//            if (value == null)
+//            {
+//                System.out.println("name " + name +
+//                        " type " + type);
+//            }
+//            else
+//            {
+//                System.out.println("name " + name +
+//                        " type " + type +
+//                        " value " + value);
+//            }
+        }
 
 	/*
 	 * Declaring a variable (float or int), add name and type to symbol table
@@ -156,9 +280,122 @@ public class Listener extends LITTLEBaseListener
 	@Override 
 	public void enterVar_decl(LITTLEParser.Var_declContext ctx) 
 	{
-		SymbolTable curTable = tableStack.peek();
-		//TODO: Add to the symbol table
+		String context = ctx.getText();
+                int numberOfDeclarations = 1;
+                
+                // Count number of separate variables to instantiate
+                String tempContext = context;
+                while (tempContext.contains(","))
+                {
+                    numberOfDeclarations++;
+                    tempContext = tempContext.substring(tempContext.indexOf(",")+1);
+                }
+                
+                // Find variable type
+                String type = this.getVariableTypeFromContext(context);
+                
+                // Add variables to symbol table on top of stack
+                for (int i = 0; i < numberOfDeclarations; i++) {
+                    this.continueVar_decl(type, context);
+                    if (context.contains(","))
+                    {
+                        context = context.substring(context.indexOf(",")+1);
+                    }
+                }
 	}
+        
+        /**
+         * Finish adding int or float symbol to top table from given context.
+         * Takes in only first variable and value. DOES NOT LOOP ON ITS OWN.
+         * @param type
+         * @param context 
+         */
+        public void continueVar_decl(String type, String context)
+        {
+            // Attempt to retrieve value (if applicable)
+            String value = null;
+            if (context.contains("=")) {
+                value = context.substring(
+                        context.indexOf("=")+1, context.indexOf(";"));
+            }
+            
+            // Create symbol and add to table
+            String name = this.getVariableNameFromContext(context);
+            if (name != null)
+            {
+                // Symbol table keys are strings that consist of name + type
+                SymbolTable curTable = tableStack.peek();
+                if (!curTable.checkRecordsForConflict(name, type))
+                {
+                    // Add record and copy of symbol key to table
+                    curTable.addSymbolKeyRecord(name, type);
+                    SymbolKey newKey = new SymbolKey(name, type);
+                    
+                    // Map new symbol key to value
+                    curTable.put(newKey, value);
+                }
+            }
+            else {
+                System.out.println("Null variable name: " + context);
+            }
+            
+            // Print symbol
+//            if (value == null)
+//            {
+//                System.out.println("name " + name +
+//                        " type " + type);
+//            }
+//            else
+//            {
+//                System.out.println("name " + name +
+//                        " type " + type +
+//                        " value " + value);
+//            }
+        }
+        
+        /**
+         * Take context and extract a variable/function name
+         * @param context
+         * @return 
+         */
+        public String getVariableNameFromContext(String context)
+        {
+            // Search for one or more lowercase letters and digits in succession (variable names)
+            String regPattern = "[a-z0-9]+";
+            Pattern pattern = Pattern.compile(regPattern);
+            Matcher matcher = pattern.matcher(context);
+            
+            if(matcher.find())
+            {
+                String funcName = context.substring(matcher.start(), matcher.end());
+                return funcName;
+            }
+            
+            return null;
+        }
+        
+        /**
+         * Take context and extract a variable type
+         * @param context
+         * @return 
+         */
+        public String getVariableTypeFromContext(String context)
+        {
+            // Search for capitalized variable name
+                String type;
+                String regPattern = "[A-Z]+";
+                Pattern pattern = Pattern.compile(regPattern);
+                Matcher matcher = pattern.matcher(context);
+                
+                // If capitalized variable name is found, type is found
+                if(matcher.find())
+                {
+                    type = context.substring(matcher.start(), matcher.end());
+                    return type;
+                }
+                
+                return null;
+        }
 	
 	public ArrayList<SymbolTable> getSymbolTables()
 	{
