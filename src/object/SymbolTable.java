@@ -36,97 +36,25 @@ import java.util.LinkedHashMap;
  */
 
 // Objects represent <Key, Value>
-public class SymbolTable extends LinkedHashMap<SymbolKey, String>
+public class SymbolTable extends LinkedHashMap<String, SymbolValue>
 {
-	private String name;
-        private ArrayList<String> symbolKeyRecord = new ArrayList<>();
-        private ArrayList<SymbolKey> keyList = new ArrayList<>();
-	
-        /**
-         * Regular constructor
-         * @param name 
-         */
-	public SymbolTable(String name)
-	{
-            this.name = name;
-	}
-        
-        /**
-         * Add a record of a symbol key to the list
-         * @param name
-         * @param type 
-         */
-        public void addSymbolKeyRecord(String name, String type) 
-        {
-            if (!symbolKeyRecord.contains(name + type)) {
-                symbolKeyRecord.add(name + type);
-            }
-        }
-        
-        /**
-         * Add a symbol key to the key list
-         * @param newKey 
-         */
-        public void addSymbolKey(SymbolKey newKey)
-        {
-            keyList.add(newKey);
-        }
-        
-        /**
-         * Remove a record of a symbol key from the list
-         * @param name
-         * @param type 
-         */
-        public void removeSymbolKeyRecord(String name, String type)
-        {
-            symbolKeyRecord.remove(name + type);
-        }
-        
-        /**
-         * Remove a symbol key from the key list
-         * @param newKey 
-         */
-        public void removeSymbolKey(SymbolKey newKey)
-        {
-            keyList.remove(newKey);
-        }
-        
-        /**
-         * Test for a conflict with an existing symbol key
-         * @param name
-         * @param type
-         * @return 
-         */
-        public boolean checkRecordsForConflict(String name, String type)
-        {
-            return symbolKeyRecord.contains(name + type);
-        }
-	
-        /**
-         *  Retrieve the name of this table
-         * @return 
-         */
-	public String getName()
-	{
-            return name;
-	}
-        
-        /**
-         * Retrieve value of variable with given name and type
-         * @param name
-         * @param type
-         * @return 
-         */
-        public String getValueByNameAndType(String name, String type)
-        {
-            for (SymbolKey key : keyList)
-            {
-                if (key.getName().equals(name) && key.getType().equals(type))
-                {
-                    return this.get(key);
-                }
-            }
-            System.err.println("Symbol not found in table!");
-            return null;
-        }
+    private final String name;
+
+    /**
+     * Regular constructor
+     * @param name 
+     */
+    public SymbolTable(String name)
+    {
+        this.name = name;
+    }
+
+    /**
+     *  Retrieve the name of this table
+     * @return 
+     */
+    public String getName()
+    {
+        return this.name;
+    }
 }

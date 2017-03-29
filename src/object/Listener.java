@@ -275,16 +275,13 @@ public class Listener extends LITTLEBaseListener
             String name = this.getVariableNameFromContext(context);
             if (name != null)
             {
-                // Symbol table keys are SymbolKey objects that consist of name + type
+                // Symbol table mappings are name -> SymbolValue (value, type)
                 SymbolTable curTable = tableLinkedList.getLast();
-                if (!curTable.checkRecordsForConflict(name, type))
+                if (!curTable.containsKey(name))
                 {
-                    // Add record and copy of symbol key to table
-                    curTable.addSymbolKeyRecord(name, type);
-                    SymbolKey newKey = new SymbolKey(name, type);
-                    
-                    // Map new symbol key to value
-                    curTable.put(newKey, value);
+                    // Add name -> symbol value mapping to table
+                    SymbolValue newValue = new SymbolValue(value, type);
+                    curTable.put(name, newValue);
                 }
                 else
                 {
@@ -345,16 +342,13 @@ public class Listener extends LITTLEBaseListener
             String name = this.getVariableNameFromContext(context);
             if (name != null)
             {
-                // Symbol table keys are SymbolKey objects that consist of name + type
+                // Symbol table mappings are name -> SymbolValue (value, type)
                 SymbolTable curTable = tableLinkedList.getLast();
-                if (!curTable.checkRecordsForConflict(name, type))
+                if (!curTable.containsKey(name))
                 {
-                    // Add record and copy of symbol key to table
-                    curTable.addSymbolKeyRecord(name, type);
-                    SymbolKey newKey = new SymbolKey(name, type);
-                    
-                    // Map new symbol key to value
-                    curTable.put(newKey, value);
+                    // Add name -> symbol value mapping to table
+                    SymbolValue newValue = new SymbolValue(value, type);
+                    curTable.put(name, newValue);
                 }
                 else
                 {

@@ -31,8 +31,8 @@ import generated.LITTLEParser.ProgramContext;
 import java.util.Map.Entry;
 import object.Listener;
 import object.ParseResult;
-import object.SymbolKey;
 import object.SymbolTable;
+import object.SymbolValue;
 
 public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, ParseResult>{
 
@@ -72,12 +72,12 @@ public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, Par
                     for(SymbolTable table: symbolTables)
                     {
                         System.out.println("Symbol table "+table.getName());
-                        for (Entry<SymbolKey, String> entry : table.entrySet())
+                        for (Entry<String, SymbolValue> entry : table.entrySet())
                         {
-                            SymbolKey entrySymbolKey = entry.getKey();
-                            String entryName = entrySymbolKey.getName();
-                            String entryType = entrySymbolKey.getType();
-                            String entryValue = entry.getValue();
+                            SymbolValue entrySymbolValue = entry.getValue();
+                            String entryName = entry.getKey();
+                            String entryType = entrySymbolValue.getType();
+                            String entryValue = entrySymbolValue.getValue();
 
                             if (entryValue == null)
                             {

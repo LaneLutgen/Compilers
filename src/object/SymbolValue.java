@@ -24,23 +24,23 @@
 package object;
 
 /**
- * Object to store name and type pairs for symbols
+ * Object to store value and type pairs for symbols
  * @author Matthew Rohrlach
  */
-public class SymbolKey {
+public class SymbolValue {
     
-    protected final String name;
+    protected final String value;
     protected final String type;
     
-    public SymbolKey(String nameIn, String typeIn)
+    public SymbolValue(String valueIn, String typeIn)
     {
-        name = nameIn;
+        value = valueIn;
         type = typeIn;
     }
     
-    public String getName()
+    public String getValue()
     {
-        return this.name;
+        return this.value;
     }
     
     public String getType()
