@@ -66,12 +66,14 @@ public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, Par
 
 	@Override
 	public void printOutput() {
+		StringBuilder strBuilder = new StringBuilder();
+		
 		if(symbolTables != null)
 		{
                     int numberOfTables = symbolTables.size();
                     for(SymbolTable table: symbolTables)
                     {
-                        System.out.println("Symbol table "+table.getName());
+                        strBuilder.append("Symbol table "+table.getName()+"\n");
                         for (Entry<String, SymbolValue> entry : table.entrySet())
                         {
                             SymbolValue entrySymbolValue = entry.getValue();
@@ -84,29 +86,32 @@ public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, Par
 
                                 if (entryValue == null)
                                 {
-                                    System.out.println("name " + entryName +
-                                            " type " + entryType);
+                                    strBuilder.append("name " + entryName +
+                                            " type " + entryType + "\n");
                                 }
                                 else
                                 {
-                                    System.out.println("name " + entryName +
+                                    strBuilder.append("name " + entryName +
                                             " type " + entryType +
-                                            " value " + entryValue);
+                                            " value " + entryValue + "\n");
                                 }
                             }
                             else
                             {
                                 // Output stored declaration errors
                                 entryName = entryName.substring(17, entryName.indexOf(";"));
-                                System.out.println("DECLARATION ERROR: " + entryName);
+                                System.out.println("DECLARATION ERROR " + entryName);
+                                return;
                             }
                         }
                         if (numberOfTables > 1)
                         {
-                            System.out.println();
+                            strBuilder.append("\n");
                             numberOfTables--;
                         }
                     }
+                    
+                    System.out.print(strBuilder.toString());
 		}
 	}
 
