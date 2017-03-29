@@ -275,7 +275,7 @@ public class Listener extends LITTLEBaseListener
             String name = this.getVariableNameFromContext(context);
             if (name != null)
             {
-                // Symbol table keys are strings that consist of name + type
+                // Symbol table keys are SymbolKey objects that consist of name + type
                 SymbolTable curTable = tableLinkedList.getLast();
                 if (!curTable.checkRecordsForConflict(name, type))
                 {
@@ -290,19 +290,6 @@ public class Listener extends LITTLEBaseListener
             else {
                 System.out.println("Null variable name: " + context);
             }
-            
-            // Print symbol
-//            if (value == null)
-//            {
-//                System.out.println("name " + name +
-//                        " type " + type);
-//            }
-//            else
-//            {
-//                System.out.println("name " + name +
-//                        " type " + type +
-//                        " value " + value);
-//            }
         }
 
 	/*
@@ -354,7 +341,7 @@ public class Listener extends LITTLEBaseListener
             String name = this.getVariableNameFromContext(context);
             if (name != null)
             {
-                // Symbol table keys are strings that consist of name + type
+                // Symbol table keys are SymbolKey objects that consist of name + type
                 SymbolTable curTable = tableLinkedList.getLast();
                 if (!curTable.checkRecordsForConflict(name, type))
                 {
@@ -369,19 +356,6 @@ public class Listener extends LITTLEBaseListener
             else {
                 System.out.println("Null variable name: " + context);
             }
-            
-            // Print symbol
-//            if (value == null)
-//            {
-//                System.out.println("name " + name +
-//                        " type " + type);
-//            }
-//            else
-//            {
-//                System.out.println("name " + name +
-//                        " type " + type +
-//                        " value " + value);
-//            }
         }
         
         /**

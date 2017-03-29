@@ -48,7 +48,7 @@ public class Main {
             filePath = args[0];
         }
         else {
-            filePath = "Step3/inputs/test20.micro";
+            filePath = "Step3/inputs/test18.micro";
         }
         Driver driver = new Driver(filePath);
     }
