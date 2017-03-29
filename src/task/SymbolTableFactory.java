@@ -68,30 +68,35 @@ public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, Par
 	public void printOutput() {
 		if(symbolTables != null)
 		{
-			for(SymbolTable table: symbolTables)
-			{
-				System.out.println("Symbol table "+table.getName());
-                                for (Entry<SymbolKey, String> entry : table.entrySet())
-                                {
-                                    SymbolKey entrySymbolKey = entry.getKey();
-                                    String entryName = entrySymbolKey.getName();
-                                    String entryType = entrySymbolKey.getType();
-                                    String entryValue = entry.getValue();
-                                    
-                                    if (entryValue == null)
-                                    {
-                                        System.out.println("name " + entryName +
-                                                " type " + entryType);
-                                    }
-                                    else
-                                    {
-                                        System.out.println("name " + entryName +
-                                                " type " + entryType +
-                                                " value " + entryValue);
-                                    }
-                                }
-                                System.out.println();
-			}
+                    int numberOfTables = symbolTables.size();
+                    for(SymbolTable table: symbolTables)
+                    {
+                        System.out.println("Symbol table "+table.getName());
+                        for (Entry<SymbolKey, String> entry : table.entrySet())
+                        {
+                            SymbolKey entrySymbolKey = entry.getKey();
+                            String entryName = entrySymbolKey.getName();
+                            String entryType = entrySymbolKey.getType();
+                            String entryValue = entry.getValue();
+
+                            if (entryValue == null)
+                            {
+                                System.out.println("name " + entryName +
+                                        " type " + entryType);
+                            }
+                            else
+                            {
+                                System.out.println("name " + entryName +
+                                        " type " + entryType +
+                                        " value " + entryValue);
+                            }
+                        }
+                        if (numberOfTables > 1)
+                        {
+                            System.out.println();
+                            numberOfTables--;
+                        }
+                    }
 		}
 	}
 
