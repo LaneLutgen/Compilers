@@ -30,18 +30,26 @@ import object.IRList;
 import object.IRListener;
 import object.IRNode;
 import object.ParseResult;
+import object.SymbolTable;
 
 public class IRGenerator extends TaskTemplate<IRList ,ParseResult>{
 
 	private ParseResult input;
 	private IRListener irListener;
 	private IRList output;
+	private SymbolTable globalSymbolTable;
+	
+	public void setSymbolTable(SymbolTable table)
+	{
+		globalSymbolTable = table;
+	}
 	
 	@Override
 	public IRList doTask(ParseResult input) {
 		try{
 			this.input = input;
 			irListener = new IRListener();
+			irListener.setSymbolTable(globalSymbolTable);
 			
 			ProgramContext context = input.getContext();
 			new ParseTreeWalker().walk(irListener, context);

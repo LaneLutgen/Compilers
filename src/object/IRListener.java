@@ -24,6 +24,7 @@
 package object;
 
 import java.util.ArrayList;
+import java.util.Map.Entry;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -42,6 +43,13 @@ public class IRListener extends LITTLEBaseListener{
 	private int registerIndex = 1;
 	private String curExprValue;
 	private String curOperator;
+	
+	private SymbolTable symbols;
+	
+	public void setSymbolTable(SymbolTable table)
+	{
+		this.symbols = table;
+	}
 	
 	public IRList getIRList()
 	{
@@ -74,15 +82,40 @@ public class IRListener extends LITTLEBaseListener{
 	public void exitAssign_stmt(LITTLEParser.Assign_stmtContext ctx)
 	{
 		String varName = ctx.start.getText();
-		
 		String tempRegister = "$T"+registerIndex;
 		
+		String varType = null;
+		//Search symbol table for variable type
 		
-		//**NEED TO HANDLE FLOATS SEPERATELY
-		addSTOREINode(curExprValue, tempRegister);
-		addSTOREINode(tempRegister, varName);
-		registerIndex++;
+		for(Entry<String, SymbolValue> entry : symbols.entrySet())
+		{
+			SymbolValue val = entry.getValue();
+			if(entry.getKey() != null)
+			{
+				if(entry.getKey().equals(varName))
+				{
+					varType = val.getType();
+				}
+			}
+		}
+		
+		if(varType != null)
+		{
+			if(varType.equals("FLOAT"))
+			{
+				addSTOREFNode(curExprValue, tempRegister);
+				addSTOREFNode(tempRegister, varName);
+			}
+			else if(varType.equals("INT"))
+			{
+				addSTOREINode(curExprValue, tempRegister);
+				addSTOREINode(tempRegister, varName);
+			}
+			registerIndex++;
+		}
+		
 	}
+	
 	@Override
 	public void enterExpr(LITTLEParser.ExprContext ctx)
 	{
@@ -94,6 +127,11 @@ public class IRListener extends LITTLEBaseListener{
 	}
 	
 	
+	private void addSTOREFNode(String input, String output)
+	{
+		IRNode node = new IRNode("STOREF", input, null, output);
+		irList.insert(node);
+	}
 	
 	private void addSTOREINode(String input, String output)
 	{

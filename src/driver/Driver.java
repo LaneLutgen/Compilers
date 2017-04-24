@@ -61,6 +61,7 @@ public class Driver {
         //symTblFactory.printOutput();
        
         IRGenerator irGenerator = new IRGenerator();
+        irGenerator.setSymbolTable(tables.get(0));
         IRList irList = irGenerator.doTask(parseResult);
         irGenerator.printOutput();
         
