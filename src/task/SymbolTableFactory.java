@@ -29,7 +29,7 @@ import org.antlr.v4.runtime.tree.ParseTreeWalker;
 
 import generated.LITTLEParser.ProgramContext;
 import java.util.Map.Entry;
-import object.Listener;
+import object.SymbolTableListener;
 import object.ParseResult;
 import object.SymbolTable;
 import object.SymbolValue;
@@ -37,14 +37,14 @@ import object.SymbolValue;
 public class SymbolTableFactory extends TaskTemplate<ArrayList<SymbolTable>, ParseResult>{
 
 	private ParseResult input;
-	private Listener parseListener;
+	private SymbolTableListener parseListener;
 	private ArrayList<SymbolTable> symbolTables;
 	
 	@Override
 	public ArrayList<SymbolTable> doTask(ParseResult input) {
 		try{
 			this.input = input;
-			parseListener = new Listener();
+			parseListener = new SymbolTableListener();
 			
 			ProgramContext context = input.getContext();
 			new ParseTreeWalker().walk(parseListener, context);

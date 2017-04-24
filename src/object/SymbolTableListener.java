@@ -31,7 +31,7 @@ import generated.LITTLEParser;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-public class Listener extends LITTLEBaseListener
+public class SymbolTableListener extends LITTLEBaseListener
 {
 	//MAY OR MAY NOT NEED THIS
 	private ArrayList<SymbolTable> tableList = new ArrayList<SymbolTable>();

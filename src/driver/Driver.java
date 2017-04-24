@@ -58,15 +58,12 @@ public class Driver {
 
         SymbolTableFactory symTblFactory = new SymbolTableFactory();
         ArrayList<SymbolTable> tables = symTblFactory.doTask(parseResult);
-        symTblFactory.printOutput();
+        //symTblFactory.printOutput();
        
-        // [Example progression from here]
-        // Optimize code
-//        Optimize optimize = new Optimize();
-//        ir = optimize.doTask(ir);
-//        
-        // Generate executable
-//        Generate generate = new Generate();
-//        generate.doTask();
+        IRGenerator irGenerator = new IRGenerator();
+        IRList irList = irGenerator.doTask(parseResult);
+        irGenerator.printOutput();
+        
+        TinyGenerator tinyGenerator = new TinyGenerator();
     }
 }
