@@ -41,6 +41,8 @@ public class IRListener extends LITTLEBaseListener{
 	
 	//Index used for temp registers, Ex. $T1, $T2, etc.
 	private int registerIndex = 1;
+	private int labelIndex = 1;
+	
 	private String curExprValue;
 	private String curOperator;
 	
@@ -69,6 +71,43 @@ public class IRListener extends LITTLEBaseListener{
         addLABELNode(funcName);
 	}
 	
+	/*
+	 * Entering while loop, create new LABEL
+	 */
+	@Override
+	public void enterWhile_stmt(LITTLEParser.While_stmtContext ctx)
+	{
+		addLABELNode("label"+labelIndex);
+		labelIndex++;
+	}
+	
+	@Override
+	public void exitWhile_stmt(LITTLEParser.While_stmtContext ctx)
+	{
+		addLABELNode("label"+labelIndex);
+		labelIndex++;
+	}
+	
+	@Override
+	public void enterIf_stmt(LITTLEParser.If_stmtContext ctx)
+	{
+		//Check the conditional to generate correct instruction
+	}
+	
+	@Override
+	public void exitIf_stmt(LITTLEParser.If_stmtContext ctx)
+	{
+		addLABELNode("label"+labelIndex);
+		labelIndex++;
+	}
+	
+	@Override
+	public void enterElse_part(LITTLEParser.Else_partContext ctx)
+	{
+		addLABELNode("label"+labelIndex);
+		labelIndex++;
+	}
+	
 	private void addLABELNode(String name)
 	{
 		IRNode node = new IRNode("LABEL", null, null, name);
@@ -85,8 +124,8 @@ public class IRListener extends LITTLEBaseListener{
 		String tempRegister = "$T"+registerIndex;
 		
 		String varType = null;
-		//Search symbol table for variable type
 		
+		//Search symbol table for variable type
 		for(Entry<String, SymbolValue> entry : symbols.entrySet())
 		{
 			SymbolValue val = entry.getValue();
@@ -117,7 +156,7 @@ public class IRListener extends LITTLEBaseListener{
 	}
 	
 	@Override
-	public void enterExpr(LITTLEParser.ExprContext ctx)
+	public void exitExpr(LITTLEParser.ExprContext ctx)
 	{
 		String value = ctx.getText();
 		curExprValue = value;
