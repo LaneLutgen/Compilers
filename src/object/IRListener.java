@@ -24,7 +24,9 @@
 package object;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Map.Entry;
+import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -68,7 +70,7 @@ public class IRListener extends LITTLEBaseListener{
         String context = ctx.getText();
         String funcName = this.getFunctionNameFromContext(context);
         
-        addLABELNode(funcName);
+        irList.addLABELNode(funcName);
 	}
 	
 	/*
@@ -77,14 +79,14 @@ public class IRListener extends LITTLEBaseListener{
 	@Override
 	public void enterWhile_stmt(LITTLEParser.While_stmtContext ctx)
 	{
-		addLABELNode("label"+labelIndex);
+		irList.addLABELNode("label"+labelIndex);
 		labelIndex++;
 	}
 	
 	@Override
 	public void exitWhile_stmt(LITTLEParser.While_stmtContext ctx)
 	{
-		addLABELNode("label"+labelIndex);
+		irList.addLABELNode("label"+labelIndex);
 		labelIndex++;
 	}
 	
@@ -97,21 +99,15 @@ public class IRListener extends LITTLEBaseListener{
 	@Override
 	public void exitIf_stmt(LITTLEParser.If_stmtContext ctx)
 	{
-		addLABELNode("label"+labelIndex);
+		irList.addLABELNode("label"+labelIndex);
 		labelIndex++;
 	}
 	
 	@Override
 	public void enterElse_part(LITTLEParser.Else_partContext ctx)
 	{
-		addLABELNode("label"+labelIndex);
+		irList.addLABELNode("label"+labelIndex);
 		labelIndex++;
-	}
-	
-	private void addLABELNode(String name)
-	{
-		IRNode node = new IRNode("LABEL", null, null, name);
-		irList.insert(node);
 	}
 	
 	/*
@@ -142,40 +138,209 @@ public class IRListener extends LITTLEBaseListener{
 		{
 			if(varType.equals("FLOAT"))
 			{
-				addSTOREFNode(curExprValue, tempRegister);
-				addSTOREFNode(tempRegister, varName);
+				evaluateExprFloat(curExprValue);
+				
+				irList.addSTOREFNode(curExprValue, tempRegister);
+				irList.addSTOREFNode(tempRegister, varName);
 			}
 			else if(varType.equals("INT"))
 			{
-				addSTOREINode(curExprValue, tempRegister);
-				addSTOREINode(tempRegister, varName);
+				evaluateExprInt(curExprValue);
+				
+				irList.addSTOREINode(curExprValue, tempRegister);
+				irList.addSTOREINode(tempRegister, varName);
 			}
 			registerIndex++;
 		}
 		
 	}
 	
+	private void evaluateExprFloat(String exp)
+	{
+		char[] tokens = exp.toCharArray();
+		
+		Stack<String> variables = new Stack<String>();
+		Stack<Character> operations = new Stack<Character>();
+		
+		for(int i = 0; i < tokens.length; i++)
+		{
+			if(tokens[i] == ' ')
+			{
+				continue;
+			}
+			else if(tokens[i] == '+' || tokens[i] == '-' ||
+                    tokens[i] == '*' || tokens[i] == '/')
+			{				
+				while(!operations.empty() && hasPrecedence(tokens[i], operations.peek()))
+				{
+					String reg = generateFloatArithmetic(operations.pop(), variables.pop(), variables.pop());
+					variables.push(reg);
+				}
+				operations.push(tokens[i]);
+			}
+			else if(tokens[i] == '(')
+			{
+				operations.push(tokens[i]);
+			}
+			else if(tokens[i] == ')')
+			{
+				while(operations.peek() != '(')
+				{
+					String reg = generateFloatArithmetic(operations.pop(), variables.pop(), variables.pop());
+					variables.push(reg);
+				}
+			}
+			else
+            {
+                StringBuffer sbuf = new StringBuffer();
+                // There may be more than one digits in number
+                while (i < tokens.length && tokens[i] != '+' && tokens[i] != '-' &&
+                        tokens[i] != '*' && tokens[i] != '/' && tokens[i] != '(' && tokens[i] != ')')
+                {
+                	sbuf.append(tokens[i++]);
+                }
+                variables.push(sbuf.toString());
+                i--;
+            }
+		}
+		
+		while(!operations.isEmpty())
+		{
+			char op = operations.pop();
+			if(op != '(' && op != ')')
+			{
+				generateFloatArithmetic(op, variables.pop(), variables.pop());
+			}
+		}
+	}
+	
+	private void evaluateExprInt(String expr)
+	{
+		char[] tokens = expr.toCharArray();
+		
+		Stack<String> variables = new Stack<String>();
+		Stack<Character> operations = new Stack<Character>();
+		
+		int index = 0;
+		
+		for(int i = 0; i < tokens.length; i++)
+		{
+			if(tokens[i] == ' ')
+			{
+				continue;
+			}
+			else if(tokens[i] == '+' || tokens[i] == '-' ||
+                    tokens[i] == '*' || tokens[i] == '/')
+			{				
+				while(!operations.empty() && hasPrecedence(tokens[i], operations.peek()))
+				{
+					String reg = generateIntArithmetic(operations.pop(), variables.pop(), variables.pop());
+					variables.push(reg);
+				}
+				operations.push(tokens[i]);
+			}
+			else if(tokens[i] == '(')
+			{
+				operations.push(tokens[i]);
+			}
+			else if(tokens[i] == ')')
+			{
+				while(operations.peek() != '(')
+				{
+					String reg = generateIntArithmetic(operations.pop(), variables.pop(), variables.pop());
+					variables.push(reg);
+				}
+			}
+			else
+            {
+                StringBuffer sbuf = new StringBuffer();
+                // There may be more than one digits in number
+                while (i < tokens.length && tokens[i] != '+' && tokens[i] != '-' &&
+                        tokens[i] != '*' && tokens[i] != '/' && tokens[i] != '(' && tokens[i] != ')')
+                {
+                	sbuf.append(tokens[i++]);
+                }
+                variables.push(sbuf.toString());
+                i--;
+            }
+		}
+		
+		while(!operations.isEmpty())
+		{
+			char op = operations.pop();
+			if(op != '(' && op != ')')
+			{
+				generateIntArithmetic(op, variables.pop(), variables.pop());
+			}
+		}
+	}
+	
+	private boolean hasPrecedence(char opOne, char opTwo)
+	{
+		if (opTwo == '(' || opTwo == ')')
+            return false;
+        if ((opOne == '*' || opOne == '/') && (opTwo == '+' || opTwo == '-'))
+            return false;
+        else
+            return true;
+	}
+	
+	private String generateFloatArithmetic(char op, String varOne, String varTwo)
+	{
+		String tempRegister = "$T"+registerIndex;
+		
+		switch(op)
+		{
+			case '+':
+				irList.addADDFNode(varTwo, varOne, tempRegister);
+				break;
+			case '-':
+				irList.addSUBFNode(varTwo, varOne, tempRegister);
+				break;
+			case '*':
+				irList.addMULTFNode(varTwo, varOne, tempRegister);
+				break;
+			case '/':
+				irList.addDIVFNode(varTwo, varOne, tempRegister);	
+				break;
+		}
+		
+		registerIndex++;
+		
+		return tempRegister;
+	}
+	
+	private String generateIntArithmetic(char op, String varOne, String varTwo)
+	{
+		String tempRegister = "$T"+registerIndex;
+		
+		switch(op)
+		{
+			case '+':
+				irList.addADDINode(varTwo, varOne, tempRegister);
+				break;
+			case '-':
+				irList.addSUBINode(varTwo, varOne, tempRegister);
+				break;
+			case '*':
+				irList.addMULTINode(varTwo, varOne, tempRegister);
+				break;
+			case '/':
+				irList.addDIVINode(varTwo, varOne, tempRegister);	
+				break;
+		}
+		
+		registerIndex++;
+		
+		return tempRegister;
+	}
+	
+	
 	@Override
 	public void exitExpr(LITTLEParser.ExprContext ctx)
 	{
 		String value = ctx.getText();
 		curExprValue = value;
-		
-		//Here we will have to generate any instructions for evaluation
-		//Ex. ADD, SUB, etc.
-	}
-	
-	
-	private void addSTOREFNode(String input, String output)
-	{
-		IRNode node = new IRNode("STOREF", input, null, output);
-		irList.insert(node);
-	}
-	
-	private void addSTOREINode(String input, String output)
-	{
-		IRNode node = new IRNode("STOREI", input, null, output);
-		irList.insert(node);
 	}
 	
 	/**
