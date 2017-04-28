@@ -71,6 +71,7 @@ public class IRListener extends LITTLEBaseListener{
         String funcName = this.getFunctionNameFromContext(context);
         
         irList.addLABELNode(funcName);
+        irList.addLINKNode();
 	}
 	
 	/*
@@ -117,7 +118,7 @@ public class IRListener extends LITTLEBaseListener{
 	public void exitAssign_stmt(LITTLEParser.Assign_stmtContext ctx)
 	{
 		String varName = ctx.start.getText();
-		String tempRegister = "$T"+registerIndex;
+		String tempRegister = null;
 		
 		String varType = null;
 		
@@ -138,25 +139,59 @@ public class IRListener extends LITTLEBaseListener{
 		{
 			if(varType.equals("FLOAT"))
 			{
-				evaluateExprFloat(curExprValue);
+				boolean hasOps = evaluateExprFloat(curExprValue);
 				
-				irList.addSTOREFNode(curExprValue, tempRegister);
-				irList.addSTOREFNode(tempRegister, varName);
+				try
+				{
+					registerIndex--;
+					Float f = Float.parseFloat(curExprValue);
+					tempRegister = "$T"+registerIndex;
+					irList.addSTOREFNode(tempRegister, varName);
+					registerIndex++;
+				}
+				catch(Exception e)
+				{
+					if(hasOps){
+						tempRegister = "$T"+registerIndex;
+						irList.addSTOREFNode(tempRegister, varName);
+					}	
+					else{
+						irList.addSTOREFNode(curExprValue, varName);
+					}
+				}	
 			}
 			else if(varType.equals("INT"))
 			{
-				evaluateExprInt(curExprValue);
+				boolean hasOps = evaluateExprInt(curExprValue);
 				
-				irList.addSTOREINode(curExprValue, tempRegister);
-				irList.addSTOREINode(tempRegister, varName);
+				try
+				{
+					registerIndex--;
+					Integer i = Integer.parseInt(curExprValue);
+					tempRegister = "$T"+registerIndex;
+					irList.addSTOREINode(tempRegister, varName);
+					registerIndex++;
+				}
+				catch(Exception e)
+				{
+					if(hasOps){
+						tempRegister = "$T"+registerIndex;
+						irList.addSTOREINode(tempRegister, varName);
+					}	
+					else{
+						irList.addSTOREINode(curExprValue, varName);
+					}
+				}
+				
 			}
-			registerIndex++;
 		}
 		
 	}
 	
-	private void evaluateExprFloat(String exp)
+	private boolean evaluateExprFloat(String exp)
 	{
+		boolean hasOperators = false;
+		
 		char[] tokens = exp.toCharArray();
 		
 		Stack<String> variables = new Stack<String>();
@@ -177,6 +212,7 @@ public class IRListener extends LITTLEBaseListener{
 					variables.push(reg);
 				}
 				operations.push(tokens[i]);
+				hasOperators = true;
 			}
 			else if(tokens[i] == '(')
 			{
@@ -199,7 +235,20 @@ public class IRListener extends LITTLEBaseListener{
                 {
                 	sbuf.append(tokens[i++]);
                 }
-                variables.push(sbuf.toString());
+                
+                try
+                {
+                	Float val = Float.parseFloat(sbuf.toString());
+                	String reg = "$T"+registerIndex;
+                	irList.addSTOREFNode(val.toString(), reg);
+                	variables.push(reg);
+                	registerIndex++;
+                }
+                catch(Exception e)
+                {
+                    variables.push(sbuf.toString());
+                }
+                
                 i--;
             }
 		}
@@ -212,16 +261,18 @@ public class IRListener extends LITTLEBaseListener{
 				generateFloatArithmetic(op, variables.pop(), variables.pop());
 			}
 		}
+		
+		return hasOperators;
 	}
 	
-	private void evaluateExprInt(String expr)
+	private boolean evaluateExprInt(String expr)
 	{
+		boolean hasOperators = false;
+		
 		char[] tokens = expr.toCharArray();
 		
 		Stack<String> variables = new Stack<String>();
 		Stack<Character> operations = new Stack<Character>();
-		
-		int index = 0;
 		
 		for(int i = 0; i < tokens.length; i++)
 		{
@@ -238,6 +289,8 @@ public class IRListener extends LITTLEBaseListener{
 					variables.push(reg);
 				}
 				operations.push(tokens[i]);
+				
+				hasOperators = true;
 			}
 			else if(tokens[i] == '(')
 			{
@@ -260,8 +313,22 @@ public class IRListener extends LITTLEBaseListener{
                 {
                 	sbuf.append(tokens[i++]);
                 }
-                variables.push(sbuf.toString());
+                
                 i--;
+                
+                try
+                {
+                	Integer val = Integer.parseInt(sbuf.toString());
+                	String reg = "$T"+registerIndex;
+                	irList.addSTOREINode(val.toString(), reg);
+                	variables.push(reg);
+                	registerIndex++;
+                }
+                catch(Exception e)
+                {
+                    variables.push(sbuf.toString());
+                }
+               
             }
 		}
 		
@@ -273,6 +340,8 @@ public class IRListener extends LITTLEBaseListener{
 				generateIntArithmetic(op, variables.pop(), variables.pop());
 			}
 		}
+		
+		return hasOperators;
 	}
 	
 	private boolean hasPrecedence(char opOne, char opTwo)

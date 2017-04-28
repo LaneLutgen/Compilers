@@ -53,6 +53,12 @@ public class IRList {
 		this.insert(node);
 	}
 	
+	public void addLINKNode()
+	{
+		IRNode node = new IRNode("LINK", null, null, null);
+		this.insert(node);
+	}
+	
 	public void addSTOREFNode(String input, String output)
 	{
 		IRNode node = new IRNode("STOREF", input, null, output);
