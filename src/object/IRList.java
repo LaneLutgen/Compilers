@@ -53,6 +53,12 @@ public class IRList {
 		this.insert(node);
 	}
 	
+	public void addJUMPNode(String label)
+	{
+		IRNode node = new IRNode("JUMP", null, null, label);
+		this.insert(node);
+	}
+	
 	public void addLINKNode()
 	{
 		IRNode node = new IRNode("LINK", null, null, null);
@@ -68,6 +74,24 @@ public class IRList {
 	public void addSTOREINode(String input, String output)
 	{
 		IRNode node = new IRNode("STOREI", input, null, output);
+		this.insert(node);
+	}
+	
+	public void addWRITEFNode(String input)
+	{
+		IRNode node = new IRNode("WRITEF", null, null, input);
+		this.insert(node);
+	}
+	
+	public void addWRITEINode(String input)
+	{
+		IRNode node = new IRNode("WRITEI", null, null, input);
+		this.insert(node);
+	}
+	
+	public void addWRITESNode()
+	{
+		IRNode node = new IRNode("WRITES", null, null, "newline");
 		this.insert(node);
 	}
 	

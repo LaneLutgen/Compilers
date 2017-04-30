@@ -81,7 +81,6 @@ public class IRListener extends LITTLEBaseListener{
 	public void enterWhile_stmt(LITTLEParser.While_stmtContext ctx)
 	{
 		irList.addLABELNode("label"+labelIndex);
-		labelIndex++;
                 
                 //Check the conditional to generate correct instruction
                 String conditional = ctx.children.get(2).getText();
@@ -91,9 +90,9 @@ public class IRListener extends LITTLEBaseListener{
 	@Override
 	public void exitWhile_stmt(LITTLEParser.While_stmtContext ctx)
 	{
-		irList.addLABELNode("label"+labelIndex);
+		irList.addJUMPNode("label"+labelIndex);
 		labelIndex++;
-                
+		irList.addLABELNode("label"+labelIndex);        
                 // Generate code for conditional
                 
 	}
@@ -202,6 +201,85 @@ public class IRListener extends LITTLEBaseListener{
 		String value = ctx.getText();
 		curExprValue = value;
 	}
+     
+    @Override    
+    public void enterWrite_stmt(LITTLEParser.Write_stmtContext ctx)
+    {
+    	String exp = ctx.getText();
+    	evaluateWriteExpr(exp);
+    }
+    
+    private void evaluateWriteExpr(String exp)
+    {
+    	char[] tokens = exp.toCharArray();
+    	
+    	String varName = null;
+    	
+    	for(int i = 0; i < tokens.length; i++)
+		{
+    		if(tokens[i] == ' ')
+    		{
+    			continue;
+    		}
+    	    else if(tokens[i] == '(')
+    		{
+    			continue;
+    		}
+    		else if(tokens[i] == ')')
+    		{
+    			continue;
+    		}
+    		else if(tokens[i] == ',')
+    		{
+    			varName = null;
+    		}
+    		else
+    		{
+    			StringBuffer sbuf = new StringBuffer();
+                while (i < tokens.length && tokens[i] != '(' && tokens[i] != ')' && tokens[i] != ',')
+                {
+                	sbuf.append(tokens[i++]);
+                }
+                varName = sbuf.toString(); 
+                
+                if(!varName.equals("WRITE"))
+                {
+                	if(varName.equals("newline"))
+                	{
+                		irList.addWRITESNode();
+                	}
+                	else
+                	{
+                		String varType = null;
+                		//Determine if int or float
+                		for(Entry<String, SymbolValue> entry : symbols.entrySet())
+                		{
+                			SymbolValue val = entry.getValue();
+                			if(entry.getKey() != null)
+                			{
+                				if(entry.getKey().equals(varName))
+                				{
+                					varType = val.getType();
+                				}
+                			}
+                		}
+                		
+                		if(varType != null)
+                		{
+                			if(varType.equals("FLOAT"))
+                			{
+                				irList.addWRITEFNode(varName);
+                			}
+                			else
+                			{
+                				irList.addWRITEINode(varName);
+                			}
+                		}
+                	}
+                }
+    		}
+		}
+    }
 	
 	private boolean evaluateExprFloat(String exp)
 	{
