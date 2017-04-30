@@ -455,7 +455,7 @@ public class IRListener extends LITTLEBaseListener{
                 char op = operations.pop();
                 if(op != '(' && op != ')')
                 {
-                    generateIntArithmetic(op, variables.pop(), variables.pop());
+                    generateIntArithmetic(op, variables.pop(), variables.peek());
                 }
             }
 
