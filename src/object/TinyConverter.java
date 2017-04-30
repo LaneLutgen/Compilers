@@ -12,8 +12,11 @@ public class TinyConverter {
 	{
 		String opOne = null;
 		String opTwo = null;
+		String op = null;
+		String result = null;
 		ArrayList<String> codes = new ArrayList<String>();
 		
+		//I think this switch statement is worse...
 		switch(node.opCode)
 		{
 			case "LABEL":
@@ -21,9 +24,8 @@ public class TinyConverter {
 				break;
 			case "STOREF":
 			case "STOREI":
-				
-				String op = node.firstOp;
-				String result = node.result;
+				op = node.firstOp;
+				result = node.result;
 				
 				//Create seperate registers
 				if(!op.contains("$T") && !result.contains("$T"))
@@ -244,28 +246,220 @@ public class TinyConverter {
 				hashTable.put(opOne, opTwo);
 				break;
 			case "GTI":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpi "+opOne+" "+opTwo);
+				codes.add("jgt "+node.result);
 				break;
 			case "GTF":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpr "+opOne+" "+opTwo);
+				codes.add("jgt "+node.result);
 				break;
 			case "GEI":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpi "+opOne+" "+opTwo);
+				codes.add("jge "+node.result);
 				break;
 			case "GEF":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpr "+opOne+" "+opTwo);
+				codes.add("jge "+node.result);
 				break;
 			case "LTI":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpi "+opOne+" "+opTwo);
+				codes.add("jlt "+node.result);
 				break;
 			case "LTF":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpr "+opOne+" "+opTwo);
+				codes.add("jlt "+node.result);
 				break;
 			case "LEI":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpi "+opOne+" "+opTwo);
+				codes.add("jle "+node.result);
 				break;
 			case "LEF":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpr "+opOne+" "+opTwo);
+				codes.add("jle "+node.result);
 				break;
 			case "NEI":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpi "+opOne+" "+opTwo);
+				codes.add("jne "+node.result);
 				break;
 			case "NEF":
-				break;
-			case "EQF":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpr "+opOne+" "+opTwo);
+				codes.add("jne "+node.result);
 				break;
 			case "EQI":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpi "+opOne+" "+opTwo);
+				codes.add("jeq "+node.result);
+				break;
+			case "EQF":
+				opOne = node.firstOp;
+				opTwo = node.secondOp;
+				if(opOne.contains("$T"))
+				{
+					opOne = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				if(opTwo.contains("$T"))
+				{
+					opTwo = "r"+registerIndex;
+					registerIndex++;
+				}
+				
+				codes.add("cmpr "+opOne+" "+opTwo);
+				codes.add("jeq "+node.result);
 				break;
 			case "JUMP":
 				codes.add("jmp "+node.result);
@@ -280,8 +474,10 @@ public class TinyConverter {
 				codes.add("sys writes newline");
 				break;
 			case "READF":
+				codes.add("sys readr "+node.result);
 				break;
 			case "READI":
+				codes.add("sys readi "+node.result);
 				break;
 			case "RET":
 				codes.add("sys halt");
