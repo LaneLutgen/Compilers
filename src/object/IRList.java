@@ -95,6 +95,18 @@ public class IRList {
 		this.insert(node);
 	}
 	
+	public void addREADINODE(String input)
+	{
+		IRNode node = new IRNode("READI", null, null, input);
+		this.insert(node);
+	}
+	
+	public void addREADFNODE(String input)
+	{
+		IRNode node = new IRNode("READF", null, null, input);
+		this.insert(node);
+	}
+	
 	public void addRETURNNode()
 	{
 		IRNode node = new IRNode("RET", null, null, null);

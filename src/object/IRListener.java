@@ -215,10 +215,17 @@ public class IRListener extends LITTLEBaseListener{
     public void enterWrite_stmt(LITTLEParser.Write_stmtContext ctx)
     {
     	String exp = ctx.getText();
-    	evaluateWriteExpr(exp);
+    	evaluateReadWriteExpr(exp, false);
     }
     
-    private void evaluateWriteExpr(String exp)
+    @Override
+    public void enterRead_stmt(LITTLEParser.Read_stmtContext ctx)
+    {
+    	String exp = ctx.getText();
+    	evaluateReadWriteExpr(exp, true);
+    }
+    
+    private void evaluateReadWriteExpr(String exp, boolean isRead)
     {
     	char[] tokens = exp.toCharArray();
     	
@@ -251,11 +258,14 @@ public class IRListener extends LITTLEBaseListener{
                 }
                 varName = sbuf.toString(); 
                 
-                if(!varName.equals("WRITE"))
+                if(!varName.equals("WRITE") && !varName.equals("READ"))
                 {
                 	if(varName.equals("newline"))
                 	{
-                		irList.addWRITESNode();
+                		if(!isRead)
+                		{
+                			irList.addWRITESNode();
+                		}
                 	}
                 	else
                 	{
@@ -277,11 +287,17 @@ public class IRListener extends LITTLEBaseListener{
                 		{
                 			if(varType.equals("FLOAT"))
                 			{
-                				irList.addWRITEFNode(varName);
+                				if(isRead)
+                					irList.addREADFNODE(varName);
+                				else
+                					irList.addWRITEFNode(varName);
                 			}
                 			else
                 			{
-                				irList.addWRITEINode(varName);
+                				if(isRead)
+                					irList.addREADINODE(varName);
+                				else
+                					irList.addWRITEINode(varName);
                 			}
                 		}
                 	}
