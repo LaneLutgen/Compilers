@@ -66,13 +66,11 @@ public class IRGenerator extends TaskTemplate<IRList ,ParseResult>{
 
 	@Override
 	public ParseResult getInputObject() {
-		// TODO Auto-generated method stub
-		return null;
+		return input;
 	}
 
 	@Override
 	public void printOutput() {
-		// TODO Auto-generated method stub
 		System.out.println(";IR code");
 		
 		IRNode cur = output.first;

@@ -46,7 +46,6 @@ public class IRNode extends ObjectTemplate{
 	
 	@Override
 	public void printData() {
-		// TODO Auto-generated method stub
 		if(firstOp == null && secondOp == null && result == null)
 		{
 			System.out.println(opCode);

@@ -82,6 +82,10 @@ public class IRListener extends LITTLEBaseListener{
 	{
 		irList.addLABELNode("label"+labelIndex);
 		labelIndex++;
+                
+                //Check the conditional to generate correct instruction
+                String conditional = ctx.children.get(2).getText();
+                this.evaluateCond(conditional);
 	}
 	
 	@Override
@@ -89,12 +93,17 @@ public class IRListener extends LITTLEBaseListener{
 	{
 		irList.addLABELNode("label"+labelIndex);
 		labelIndex++;
+                
+                // Generate code for conditional
+                
 	}
 	
 	@Override
 	public void enterIf_stmt(LITTLEParser.If_stmtContext ctx)
 	{
 		//Check the conditional to generate correct instruction
+                String conditional = ctx.children.get(2).getText();
+                this.evaluateCond(conditional);
 	}
 	
 	@Override
@@ -185,7 +194,13 @@ public class IRListener extends LITTLEBaseListener{
 				
 			}
 		}
-		
+	}
+        
+        @Override
+	public void exitExpr(LITTLEParser.ExprContext ctx)
+	{
+		String value = ctx.getText();
+		curExprValue = value;
 	}
 	
 	private boolean evaluateExprFloat(String exp)
@@ -267,81 +282,476 @@ public class IRListener extends LITTLEBaseListener{
 	
 	private boolean evaluateExprInt(String expr)
 	{
-		boolean hasOperators = false;
-		
-		char[] tokens = expr.toCharArray();
-		
-		Stack<String> variables = new Stack<String>();
-		Stack<Character> operations = new Stack<Character>();
-		
-		for(int i = 0; i < tokens.length; i++)
-		{
-			if(tokens[i] == ' ')
-			{
-				continue;
-			}
-			else if(tokens[i] == '+' || tokens[i] == '-' ||
-                    tokens[i] == '*' || tokens[i] == '/')
-			{				
-				while(!operations.empty() && hasPrecedence(tokens[i], operations.peek()))
-				{
-					String reg = generateIntArithmetic(operations.pop(), variables.pop(), variables.pop());
-					variables.push(reg);
-				}
-				operations.push(tokens[i]);
-				
-				hasOperators = true;
-			}
-			else if(tokens[i] == '(')
-			{
-				operations.push(tokens[i]);
-			}
-			else if(tokens[i] == ')')
-			{
-				while(operations.peek() != '(')
-				{
-					String reg = generateIntArithmetic(operations.pop(), variables.pop(), variables.pop());
-					variables.push(reg);
-				}
-			}
-			else
+            boolean hasOperators = false;
+
+            char[] tokens = expr.toCharArray();
+
+            Stack<String> variables = new Stack<String>();
+            Stack<Character> operations = new Stack<Character>();
+
+            for(int i = 0; i < tokens.length; i++)
             {
-                StringBuffer sbuf = new StringBuffer();
-                // There may be more than one digits in number
-                while (i < tokens.length && tokens[i] != '+' && tokens[i] != '-' &&
-                        tokens[i] != '*' && tokens[i] != '/' && tokens[i] != '(' && tokens[i] != ')')
+                if(tokens[i] == ' ')
                 {
-                	sbuf.append(tokens[i++]);
+                    continue;
                 }
-                
-                i--;
-                
-                try
+                else if(tokens[i] == '+' || tokens[i] == '-' ||
+                    tokens[i] == '*' || tokens[i] == '/')
+                {				
+                    while(!operations.empty() && hasPrecedence(tokens[i], operations.peek()))
+                    {
+                            String reg = generateIntArithmetic(operations.pop(), variables.pop(), variables.pop());
+                            variables.push(reg);
+                    }
+                    operations.push(tokens[i]);
+
+                    hasOperators = true;
+                }
+                else if(tokens[i] == '(')
                 {
-                	Integer val = Integer.parseInt(sbuf.toString());
-                	String reg = "$T"+registerIndex;
-                	irList.addSTOREINode(val.toString(), reg);
-                	variables.push(reg);
-                	registerIndex++;
+                    operations.push(tokens[i]);
                 }
-                catch(Exception e)
+                else if(tokens[i] == ')')
                 {
-                    variables.push(sbuf.toString());
+                    while(operations.peek() != '(')
+                    {
+                            String reg = generateIntArithmetic(operations.pop(), variables.pop(), variables.pop());
+                            variables.push(reg);
+                    }
                 }
-               
+                else
+                {
+                    StringBuffer sbuf = new StringBuffer();
+                    // There may be more than one digits in number
+                    while (i < tokens.length && tokens[i] != '+' && tokens[i] != '-' &&
+                            tokens[i] != '*' && tokens[i] != '/' && tokens[i] != '(' && tokens[i] != ')')
+                    {
+                        sbuf.append(tokens[i++]);
+                    }
+
+                    i--;
+
+                    try
+                    {
+                        Integer val = Integer.parseInt(sbuf.toString());
+                        String reg = "$T"+registerIndex;
+                        irList.addSTOREINode(val.toString(), reg);
+                        variables.push(reg);
+                        registerIndex++;
+                    }
+                    catch(Exception e)
+                    {
+                        variables.push(sbuf.toString());
+                    }
+
+                }
             }
-		}
+
+            while(!operations.isEmpty())
+            {
+                char op = operations.pop();
+                if(op != '(' && op != ')')
+                {
+                    generateIntArithmetic(op, variables.pop(), variables.pop());
+                }
+            }
+
+            return hasOperators;
+	}
+        
+        private boolean evaluateCond(String expr)
+	{
+            char[] tokens = expr.toCharArray();
+            ArrayList<String> tokenStrings = new ArrayList<>();
+            
+            // Convert tokens into strings to catch multi-char operators
+            boolean testNextToken = false;
+            boolean addingVariableToken = false;
+            String currentToken = "";
+            for (int i = 0; i < tokens.length; i++)
+            {
+                // Get ready for the worst switch statement in the world.
+                switch(tokens[i])
+                {
+                    case '>':
+                        // Previous token could have been opener to multi-token
+                        if (testNextToken)
+                        {
+                            // Should never be second char in multi-token
+                            System.err.println("Token not recognized!");
+                            
+                            // End multi-token token
+                            testNextToken = false;
+                            tokenStrings.add(currentToken + ">");
+                        }
+                        // Previous token(s) were part of variable token and this token may be opener to multi-token
+                        else if (addingVariableToken)
+                        {
+                            // End multi-char variable
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            
+                            // Start potential multi-token
+                            testNextToken = true;
+                            currentToken = ">";
+                        }
+                        // This token may be opener to multi-token
+                        else
+                        {
+                            // Start potential multi-token
+                            testNextToken = true;
+                            currentToken = ">";
+                        }
+                        break;
+                    case '<':
+                        if (testNextToken)
+                        {
+                            System.err.println("Token not recognized!");
+                            testNextToken = false;
+                            tokenStrings.add(currentToken + "<");
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            
+                            testNextToken = true;
+                            currentToken = "<";
+                        }
+                        else
+                        {
+                            testNextToken = true;
+                            currentToken = "<";
+                        }
+                        break;
+                    case '=':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken + "=");
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            
+                            testNextToken = true;
+                            currentToken = "=";
+                        }
+                        else
+                        {
+                            testNextToken = true;
+                            currentToken = "=";
+                        }
+                        break;
+                    case '!':
+                        if (testNextToken)
+                        {
+                            System.err.println("Token not recognized!");
+                            testNextToken = false;
+                            tokenStrings.add(currentToken + "!");
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            
+                            testNextToken = true;
+                            currentToken = "!";
+                        }
+                        else
+                        {
+                            testNextToken = true;
+                            currentToken = "!";
+                        }
+                        break;
+                    case '&':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken + "&");
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            
+                            testNextToken = true;
+                            currentToken = "&";
+                        }
+                        else
+                        {
+                            testNextToken = true;
+                            currentToken = "&";
+                        }
+                        break;
+                    case '|':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken + "|");
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            
+                            testNextToken = true;
+                            currentToken = "|";
+                        }
+                        else
+                        {
+                            testNextToken = true;
+                            currentToken = "|";
+                        }
+                        break;
+                    case '(':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add("(");
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add("(");
+                        }
+                        else
+                        {
+                            tokenStrings.add("(");
+                        }
+                        break;
+                    case ')':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(")");
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(")");
+                        }
+                        else
+                        {
+                            tokenStrings.add(")");
+                        }
+                        break;
+                    case '+':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else
+                        {
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        break;
+                    case '-':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else
+                        {
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        break;
+                    case '*':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else
+                        {
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        break;
+                    case '/':
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else if (addingVariableToken)
+                        {
+                            addingVariableToken = false;
+                            tokenStrings.add(currentToken);
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        else
+                        {
+                            tokenStrings.add(Character.toString(tokens[i]));
+                        }
+                        break;
+                    default:
+                        if (testNextToken)
+                        {
+                            testNextToken = false;
+                            tokenStrings.add(currentToken);
+                            
+                            addingVariableToken = true;
+                            currentToken = (Character.toString(tokens[i]));
+                        }
+                        else if (addingVariableToken)
+                        {
+                            currentToken = currentToken + (Character.toString(tokens[i]));
+                        }
+                        else
+                        {
+                            addingVariableToken = true;
+                            currentToken = currentToken + (Character.toString(tokens[i]));
+                        }
+                        break;
+                }
+                
+                // Catch last token if there are no remaining tokens
+                if ((i == tokens.length-1) && (testNextToken || addingVariableToken))
+                {
+                    tokenStrings.add(currentToken);
+                }
+                
+                // Clear current token if necessary
+                if (!(testNextToken || addingVariableToken))
+                {
+                    currentToken = "";
+                }
+            }
+            
+            Stack<String> variables = new Stack<>();
+            Stack<String> operations = new Stack<>();
+            
+            // Generate code for variables and operations
+            String previousToken = "";
+            String arithmeticExpString = "";
+            boolean arithmeticExp = false;
+            for(String tokenString : tokenStrings)
+            {
+                // Start arithmetic expression in conditional
+                if (!arithmeticExp && (tokenString.equals("+") || tokenString.equals("-") || tokenString.equals("*") || tokenString.equals("/")))
+                {
+                    arithmeticExp = true;
+                    arithmeticExpString = previousToken + tokenString;
+                    if (variables.size() > 0)
+                    {
+                        variables.pop();
+                    }
+                }
+                // Continuing or ending arithmetic expression
+                else if (arithmeticExp == true)
+                {
+                    if (tokenString.equals("(") || tokenString.equals(")") || tokenString.equals(";"))
+                    {
+                        arithmeticExp = false;
+                        if (arithmeticExpString.contains("."))
+                        {
+                            this.evaluateExprFloat(arithmeticExpString);
+                        }
+                        else
+                        {
+                            this.evaluateExprInt(arithmeticExpString);
+                        }
+                        // Add register of evaluated expression to stack of variables
+                        variables.push("$T"+registerIndex--);
+                    }
+                    else
+                    {
+                        arithmeticExpString += tokenString;
+                    }
+                }
+                // Add logic operator to stack
+                else if (tokenString.contains("=") || tokenString.contains(">") || tokenString.contains("<"))
+                {
+                    operations.push(tokenString);
+                }
+                // Add variable to stack
+                else if (!tokenString.equals("(") && !tokenString.equals(")"))
+                {
+                    variables.push(tokenString);
+                }
+                
+                previousToken = tokenString;
+            }
+            
+            // Generate conditional code
+            while(!operations.isEmpty() && variables.size() > 1)
+            {
+                String op = operations.pop();
+                if(!op.equals("(") && !op.equals(")"))
+                {
+                    String varType = "";
+                    String varName = variables.peek();
 		
-		while(!operations.isEmpty())
-		{
-			char op = operations.pop();
-			if(op != '(' && op != ')')
-			{
-				generateIntArithmetic(op, variables.pop(), variables.pop());
-			}
-		}
+                    //Search symbol table for variable type
+                    for(Entry<String, SymbolValue> entry : symbols.entrySet())
+                    {
+                            SymbolValue val = entry.getValue();
+                            if(entry.getKey() != null)
+                            {
+                                    if(entry.getKey().equals(varName))
+                                    {
+                                            varType = val.getType();
+                                    }
+                            }
+                    }
+                    
+                    String varType2 = "";
+                    String varName2 = variables.get(variables.size()-2);
 		
-		return hasOperators;
+                    //Search symbol table for variable type
+                    for(Entry<String, SymbolValue> entry : symbols.entrySet())
+                    {
+                            SymbolValue val = entry.getValue();
+                            if(entry.getKey() != null)
+                            {
+                                    if(entry.getKey().equals(varName2))
+                                    {
+                                            varType2 = val.getType();
+                                    }
+                            }
+                    }
+                    
+                    if (varType.equals("FLOAT") || varType2.equals("FLOAT"))
+                    {
+                        generateFloatCondLogic(op, variables.pop(), variables.pop());
+                    }
+                    else
+                    {
+                        generateIntCondLogic(op, variables.pop(), variables.pop());
+                    }
+                }
+            }
+
+            return true;
 	}
 	
 	private boolean hasPrecedence(char opOne, char opTwo)
@@ -403,14 +813,64 @@ public class IRListener extends LITTLEBaseListener{
 		
 		return tempRegister;
 	}
-	
-	
-	@Override
-	public void exitExpr(LITTLEParser.ExprContext ctx)
-	{
-		String value = ctx.getText();
-		curExprValue = value;
-	}
+        
+        private String generateFloatCondLogic(String op, String varOne, String varTwo)
+        {
+            String tempLabel = "label"+(labelIndex+1);
+		
+		switch(op)
+		{
+			case ">":
+				irList.addLEFNode(varTwo, varOne, tempLabel);
+				break;
+			case "<":
+				irList.addGEFNode(varTwo, varOne, tempLabel);
+				break;
+			case "=":
+				irList.addNEFNode(varTwo, varOne, tempLabel);
+				break;
+			case "!=":
+				irList.addEQFNode(varTwo, varOne, tempLabel);
+				break;
+                        case ">=":
+				irList.addLTFNode(varTwo, varOne, tempLabel);
+				break;
+			case "<=":
+				irList.addGTFNode(varTwo, varOne, tempLabel);	
+				break;
+		}
+		
+		return tempLabel;
+        }
+        
+        private String generateIntCondLogic(String op, String varOne, String varTwo)
+        {
+            String tempLabel = "label"+(labelIndex+1);
+		
+		switch(op)
+		{
+			case ">":
+				irList.addLEINode(varTwo, varOne, tempLabel);
+				break;
+			case "<":
+				irList.addGEINode(varTwo, varOne, tempLabel);
+				break;
+			case "=":
+				irList.addNEINode(varTwo, varOne, tempLabel);
+				break;
+			case "!=":
+				irList.addEQINode(varTwo, varOne, tempLabel);
+				break;
+                        case ">=":
+				irList.addLTINode(varTwo, varOne, tempLabel);
+				break;
+			case "<=":
+				irList.addGTINode(varTwo, varOne, tempLabel);	
+				break;
+		}
+		
+		return tempLabel;
+        }
 	
 	/**
      * Take context and extract a function name

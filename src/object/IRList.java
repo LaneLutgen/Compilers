@@ -71,6 +71,7 @@ public class IRList {
 		this.insert(node);
 	}
 	
+        // Arithmetic floats
 	public void addADDFNode(String opOne, String opTwo, String result)
 	{
 		IRNode node = new IRNode("ADDF", opOne, opTwo, result);
@@ -95,6 +96,7 @@ public class IRList {
 		this.insert(node);
 	}
 	
+        // Arithmetic ints
 	public void addADDINode(String opOne, String opTwo, String result)
 	{
 		IRNode node = new IRNode("ADDI", opOne, opTwo, result);
@@ -116,6 +118,80 @@ public class IRList {
 	public void addDIVINode(String opOne, String opTwo, String result)
 	{
 		IRNode node = new IRNode("DIVI", opOne, opTwo, result);
+		this.insert(node);
+	}
+        
+        // Conditional floats
+        public void addEQFNode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("EQF", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addNEFNode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("NEF", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addGEFNode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("GEF", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addLEFNode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("LEF", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addGTFNode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("GTF", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addLTFNode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("LTF", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        // Conditional ints
+        public void addEQINode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("EQI", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addNEINode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("NEI", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addGEINode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("GEI", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addLEINode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("LEI", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addGTINode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("GTI", opOne, opTwo, labelDest);
+		this.insert(node);
+	}
+        
+        public void addLTINode(String opOne, String opTwo, String labelDest)
+	{
+		IRNode node = new IRNode("LTI", opOne, opTwo, labelDest);
 		this.insert(node);
 	}
 }
