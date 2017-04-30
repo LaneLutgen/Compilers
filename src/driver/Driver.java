@@ -65,6 +65,8 @@ public class Driver {
         IRList irList = irGenerator.doTask(parseResult);
         irGenerator.printOutput();
         
-        TinyGenerator tinyGenerator = new TinyGenerator();
+        TinyGenerator tinyGenerator = new TinyGenerator(tables.get(0));
+        tinyGenerator.doTask(irList);
+        tinyGenerator.printOutput();
     }
 }

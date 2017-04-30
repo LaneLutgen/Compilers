@@ -23,25 +23,74 @@
  */
 package task;
 
+import java.util.ArrayList;
+import java.util.Map.Entry;
+
+import org.antlr.v4.runtime.tree.ParseTreeWalker;
+
+import generated.LITTLEParser.ProgramContext;
 import object.IRList;
+import object.IRListener;
+import object.IRNode;
+import object.SymbolTable;
+import object.SymbolValue;
+import object.TinyConverter;
 
-public class TinyGenerator extends TaskTemplate<Object,IRList>{
+public class TinyGenerator extends TaskTemplate<ArrayList<String>,IRList>{
 
+	private SymbolTable symbols;
+	private IRList input;
+	private ArrayList<String> tinyCodes = new ArrayList<String>();
+	
+	public TinyGenerator(SymbolTable symbols)
+	{
+		this.symbols = symbols;
+	}
+	
 	@Override
-	public Object doTask(IRList input) {
-		// TODO Auto-generated method stub
+	public ArrayList<String> doTask(IRList input) {
+		try{
+			this.input = input;
+			parseSymbols();
+			
+			IRNode cur = input.first;
+			while(cur != null)
+			{
+				ArrayList<String> codes = TinyConverter.convert(cur);
+				
+				for(String c : codes)
+				{
+					tinyCodes.add(c);
+				}
+				cur = cur.next;
+			}
+		}
+		catch(Exception e){
+			System.err.println("\n\n\nTinyGenerator error!\n" + e.getMessage() + "\n\n\n");
+		}
 		return null;
+	}
+	
+	private void parseSymbols()
+	{
+		for(Entry<String, SymbolValue> entry : symbols.entrySet())
+		{
+			tinyCodes.add("var "+entry.getKey());
+		}
 	}
 
 	@Override
 	public IRList getInputObject() {
 		// TODO Auto-generated method stub
-		return null;
+		return input;
 	}
 
 	@Override
 	public void printOutput() {
-		// TODO Auto-generated method stub
+		for(String s : tinyCodes)
+		{
+			System.out.println(s);
+		}
 		
 	}
 

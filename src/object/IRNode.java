@@ -25,10 +25,10 @@ package object;
 
 public class IRNode extends ObjectTemplate{
 
-	private String opCode;
-	private String firstOp;
-	private String secondOp;
-	private String result;
+	public String opCode;
+	public String firstOp;
+	public String secondOp;
+	public String result;
 	
 	//Pointer to the next node in the list
 	public IRNode next;

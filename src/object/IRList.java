@@ -95,6 +95,12 @@ public class IRList {
 		this.insert(node);
 	}
 	
+	public void addRETURNNode()
+	{
+		IRNode node = new IRNode("RET", null, null, null);
+		this.insert(node);
+	}
+	
         // Arithmetic floats
 	public void addADDFNode(String opOne, String opTwo, String result)
 	{

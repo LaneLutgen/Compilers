@@ -80,6 +80,8 @@ public class IRGenerator extends TaskTemplate<IRList ,ParseResult>{
 			cur.printData();
 			cur = cur.next;
 		}
+		
+		System.out.println(";tiny code");
 	}
 
 }

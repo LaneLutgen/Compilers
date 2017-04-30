@@ -75,6 +75,15 @@ public class IRListener extends LITTLEBaseListener{
 	}
 	
 	/*
+	 * Exiting a function, create its LABEL instruction
+	 */
+	@Override
+	public void exitFunc_decl(LITTLEParser.Func_declContext ctx)
+	{
+		irList.addRETURNNode();
+	}
+	
+	/*
 	 * Entering while loop, create new LABEL
 	 */
 	@Override
