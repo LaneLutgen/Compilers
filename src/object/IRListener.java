@@ -843,12 +843,11 @@ public class IRListener extends LITTLEBaseListener{
                             }
                     }
                     
-                    // Store variables in registers if necessary:
                     String regPattern = "[a-zA-z]+";
                     Pattern pattern = Pattern.compile(regPattern);
                     Matcher matcher = pattern.matcher(varName);
-
-                    // Variable one
+                    
+                    // Variable one temp register storage
                     if(!matcher.find())
                     {
                         String tempRegister = "$T"+registerIndex;
@@ -865,7 +864,7 @@ public class IRListener extends LITTLEBaseListener{
                         varName = tempRegister;
                     }
                     
-                    // Variable two
+                    // Variable two temp register storage
                     matcher = pattern.matcher(varName2);
                     if(!matcher.find())
                     {
@@ -883,6 +882,7 @@ public class IRListener extends LITTLEBaseListener{
                         varName2 = tempRegister;
                     }
                     
+                    // Add conditional logic
                     if (varType.equals("FLOAT") || varType2.equals("FLOAT"))
                     {
                         generateFloatCondLogic(op, varName, varName2);
