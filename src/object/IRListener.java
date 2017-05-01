@@ -812,7 +812,7 @@ public class IRListener extends LITTLEBaseListener{
                 if(!op.equals("(") && !op.equals(")"))
                 {
                     String varType = "";
-                    String varName = variables.peek();
+                    String varName = variables.pop();
 		
                     //Search symbol table for variable type
                     for(Entry<String, SymbolValue> entry : symbols.entrySet())
@@ -828,7 +828,7 @@ public class IRListener extends LITTLEBaseListener{
                     }
                     
                     String varType2 = "";
-                    String varName2 = variables.get(variables.size()-2);
+                    String varName2 = variables.pop();
 		
                     //Search symbol table for variable type
                     for(Entry<String, SymbolValue> entry : symbols.entrySet())
@@ -843,13 +843,53 @@ public class IRListener extends LITTLEBaseListener{
                             }
                     }
                     
+                    // Store variables in registers if necessary:
+                    String regPattern = "[a-zA-z]+";
+                    Pattern pattern = Pattern.compile(regPattern);
+                    Matcher matcher = pattern.matcher(varName);
+
+                    // Variable one
+                    if(!matcher.find())
+                    {
+                        String tempRegister = "$T"+registerIndex;
+                        if (varType.equals("FLOAT") || varName.contains("."))
+                        {
+                            irList.addSTOREFNode(varName, tempRegister);
+                            registerIndex++;
+                        }
+                        else
+                        {
+                            irList.addSTOREINode(varName, tempRegister);
+                            registerIndex++;
+                        }
+                        varName = tempRegister;
+                    }
+                    
+                    // Variable two
+                    matcher = pattern.matcher(varName2);
+                    if(!matcher.find())
+                    {
+                        String tempRegister = "$T"+registerIndex;
+                        if (varType2.equals("FLOAT") || varName2.contains("."))
+                        {
+                            irList.addSTOREFNode(varName2, tempRegister);
+                            registerIndex++;
+                        }
+                        else
+                        {
+                            irList.addSTOREINode(varName2, tempRegister);
+                            registerIndex++;
+                        }
+                        varName2 = tempRegister;
+                    }
+                    
                     if (varType.equals("FLOAT") || varType2.equals("FLOAT"))
                     {
-                        generateFloatCondLogic(op, variables.pop(), variables.pop());
+                        generateFloatCondLogic(op, varName, varName2);
                     }
                     else
                     {
-                        generateIntCondLogic(op, variables.pop(), variables.pop());
+                        generateIntCondLogic(op, varName, varName2);
                     }
                 }
             }
