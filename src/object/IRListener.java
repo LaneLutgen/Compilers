@@ -31,6 +31,7 @@ import java.util.regex.Pattern;
 
 import generated.LITTLEBaseListener;
 import generated.LITTLEParser;
+import java.text.DecimalFormat;
 
 /*
  * This class is a IR specific listener for generating IR code based on parser results
@@ -358,8 +359,16 @@ public class IRListener extends LITTLEBaseListener{
                 try
                 {
                 	Float val = Float.parseFloat(sbuf.toString());
+                        
+                        // Prevent exponential notation
+                        DecimalFormat decimalFormat = new DecimalFormat("#");
+                        int numFractionDigits = String.valueOf(Math.round(1 / val)).length();
+                        decimalFormat.setMinimumIntegerDigits(1);
+                        decimalFormat.setMinimumFractionDigits(1);
+                        decimalFormat.setMaximumFractionDigits(numFractionDigits);
+                        
                 	String reg = "$T"+registerIndex;
-                	irList.addSTOREFNode(val.toString(), reg);
+                	irList.addSTOREFNode(decimalFormat.format(val), reg);
                 	variables.push(reg);
                 	registerIndex++;
                 }
