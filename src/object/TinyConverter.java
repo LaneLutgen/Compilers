@@ -84,8 +84,6 @@ public class TinyConverter {
 				codes.add("addi "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
-				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
