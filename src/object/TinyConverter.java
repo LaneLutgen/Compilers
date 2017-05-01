@@ -14,6 +14,7 @@ public class TinyConverter {
 		String opTwo = null;
 		String op = null;
 		String result = null;
+		String temp = null;
 		ArrayList<String> codes = new ArrayList<String>();
 		
 		//I think this switch statement is worse...
@@ -30,18 +31,20 @@ public class TinyConverter {
 				//Create seperate registers
 				if(!op.contains("$T") && !result.contains("$T"))
 				{
-					String temp = result;
+					temp = result;
 					String reg = "r"+registerIndex;
 					codes.add("move "+op+" "+reg);
 					codes.add("move "+reg+" "+temp);
 					registerIndex++;
 					
-					hashTable.put(temp, reg);
+					if(temp.contains("$T"))
+						hashTable.put(temp, reg);
 				}
 				else
 				{
 					if(op.contains("$T"))
 					{
+						registerIndex--;
 						op = "r"+registerIndex;
 						registerIndex++;
 					}
@@ -49,6 +52,7 @@ public class TinyConverter {
 					if(result.contains("$T"))
 					{
 						result = "r"+registerIndex;
+						registerIndex++;
 					}
 					codes.add("move "+op+" "+result);
 				}
@@ -68,7 +72,15 @@ public class TinyConverter {
 					codes.add("move "+opOne+" "+opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
+				
 				codes.add("addi "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
@@ -92,12 +104,18 @@ public class TinyConverter {
 					codes.add("move "+opOne+" "+opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
+					
 				codes.add("addr "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
-				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
@@ -116,12 +134,21 @@ public class TinyConverter {
 					codes.add("move "+opOne+" "+opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
+					
+				if(opOne.contains("$T"))
+					opOne = "r"+opOne.charAt(2);
+				
 				codes.add("subi "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
-				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
@@ -140,12 +167,18 @@ public class TinyConverter {
 					codes.add("move "+opOne+" "+opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
+				
 				codes.add("subr "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
-				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
@@ -164,12 +197,17 @@ public class TinyConverter {
 					codes.add("move "+opOne+" "+opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
 				codes.add("muli "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
-				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
@@ -183,17 +221,29 @@ public class TinyConverter {
 				}
 				else
 				{
-					opOne = node.firstOp;
+					if(node.firstOp.contains("$T"))
+						opOne = "r"+node.firstOp.charAt(2);
+					else
+						opOne = node.firstOp;
 					opTwo = "r"+registerIndex;
 					codes.add("move "+opOne+" "+opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
+				
+				if(opOne.contains("$T"))
+					opOne = "r"+opOne.charAt(2);
+				
 				codes.add("mulr "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
-				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
@@ -212,12 +262,17 @@ public class TinyConverter {
 					codes.add("move "+opOne+" "+opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
 				codes.add("divi "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
-				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
@@ -234,14 +289,22 @@ public class TinyConverter {
 					opOne = node.firstOp;
 					opTwo = "r"+registerIndex;
 					codes.add("move "+opOne+" "+opTwo);
+					hashTable.put(opOne, opTwo);
+					hashTable.put(node.result, opTwo);
 				}
 				
-				opOne = node.secondOp;
+				if(hashTable.containsKey(node.secondOp))
+				{
+					opOne = hashTable.get(node.secondOp);
+				}
+				else
+				{
+					opOne = node.secondOp;
+				}
 				codes.add("divr "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
 				codes.add("move "+opOne+" "+opTwo);
-				registerIndex++;
 				
 				hashTable.put(opOne, opTwo);
 				break;
@@ -430,12 +493,14 @@ public class TinyConverter {
 				opTwo = node.secondOp;
 				if(opOne.contains("$T"))
 				{
+					registerIndex--;
 					opOne = "r"+registerIndex;
 					registerIndex++;
 				}
 				
 				if(opTwo.contains("$T"))
 				{
+					registerIndex--;
 					opTwo = "r"+registerIndex;
 					registerIndex++;
 				}
