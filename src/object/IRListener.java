@@ -24,7 +24,6 @@
 package object;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Map.Entry;
 import java.util.Stack;
 import java.util.regex.Matcher;
@@ -175,6 +174,7 @@ public class IRListener extends LITTLEBaseListener{
 					else{
 						irList.addSTOREFNode(curExprValue, varName);
 					}
+                                        registerIndex++;
 				}	
 			}
 			else if(varType.equals("INT"))
@@ -198,6 +198,7 @@ public class IRListener extends LITTLEBaseListener{
 					else{
 						irList.addSTOREINode(curExprValue, varName);
 					}
+                                        registerIndex++;
 				}
 				
 			}
@@ -784,7 +785,7 @@ public class IRListener extends LITTLEBaseListener{
                             this.evaluateExprInt(arithmeticExpString);
                         }
                         // Add register of evaluated expression to stack of variables
-                        variables.push("$T"+registerIndex--);
+                        variables.push("$T"+(registerIndex - 1));
                     }
                     else
                     {
