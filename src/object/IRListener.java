@@ -46,7 +46,11 @@ public class IRListener extends LITTLEBaseListener{
 	private int labelIndex = 1;
 	
 	private String curExprValue;
-	private String curOperator;
+	
+        private Stack<Integer> ifExitStack = new Stack<>();
+        private Stack<Integer> whileEnterStack = new Stack<>();
+        private int nestedStatementCount = 0;
+        private int nestedStatementDepth = 0;
 	
 	private SymbolTable symbols;
 	
@@ -90,42 +94,64 @@ public class IRListener extends LITTLEBaseListener{
 	public void enterWhile_stmt(LITTLEParser.While_stmtContext ctx)
 	{
 		irList.addLABELNode("label"+labelIndex);
+                this.whileEnterStack.push(labelIndex);
                 
                 //Check the conditional to generate correct instruction
                 String conditional = ctx.children.get(2).getText();
                 this.evaluateCond(conditional);
+                
+                labelIndex++;
 	}
 	
 	@Override
 	public void exitWhile_stmt(LITTLEParser.While_stmtContext ctx)
 	{
-		irList.addJUMPNode("label"+labelIndex);
-		labelIndex++;
-		irList.addLABELNode("label"+labelIndex);        
-                // Generate code for conditional
+                int whileEnterIndex = this.whileEnterStack.pop();
+		irList.addJUMPNode("label"+whileEnterIndex);
+		irList.addLABELNode("label"+(whileEnterIndex+1));
                 
 	}
 	
 	@Override
 	public void enterIf_stmt(LITTLEParser.If_stmtContext ctx)
 	{
-		//Check the conditional to generate correct instruction
+                this.ifExitStack.push(labelIndex+1);
+                
+		// Check the conditional to generate correct instruction
                 String conditional = ctx.children.get(2).getText();
                 this.evaluateCond(conditional);
+                
+                labelIndex++;
+                
+                nestedStatementCount++;
+                nestedStatementDepth++;
 	}
 	
 	@Override
 	public void exitIf_stmt(LITTLEParser.If_stmtContext ctx)
 	{
-		irList.addLABELNode("label"+labelIndex);
-		labelIndex++;
+		if (nestedStatementCount != 0 && nestedStatementDepth > 1)
+                {
+                    irList.addJUMPNode("label"+(labelIndex+1));
+                    labelIndex++;
+                }
+                
+                nestedStatementDepth--;
+                
+                if (nestedStatementDepth == 0)
+                {
+                    irList.addLABELNode("label"+(labelIndex-1));
+                    ifExitStack.clear();
+                }
 	}
 	
 	@Override
 	public void enterElse_part(LITTLEParser.Else_partContext ctx)
 	{
-		irList.addLABELNode("label"+labelIndex);
-		labelIndex++;
+                
+		irList.addLABELNode("label"+ifExitStack.pop());
+                
+                nestedStatementCount--;
 	}
 	
 	/*
