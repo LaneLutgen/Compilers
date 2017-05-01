@@ -81,6 +81,9 @@ public class TinyConverter {
 					opOne = node.secondOp;
 				}
 				
+                                if(opOne.contains("$T"))
+					opOne = "r"+opOne.substring(2,opOne.length());
+                                
 				codes.add("addi "+opOne+" "+opTwo);
 				registerIndex++;
 				opTwo = "r"+registerIndex;
@@ -142,7 +145,7 @@ public class TinyConverter {
 				}
 					
 				if(opOne.contains("$T"))
-					opOne = "r"+opOne.charAt(2);
+					opOne = "r"+opOne.substring(2,opOne.length());
 				
 				codes.add("subi "+opOne+" "+opTwo);
 				registerIndex++;
@@ -237,7 +240,7 @@ public class TinyConverter {
 				}
 				
 				if(opOne.contains("$T"))
-					opOne = "r"+opOne.charAt(2);
+					opOne = "r"+opOne.substring(2,opOne.length());
 				
 				codes.add("mulr "+opOne+" "+opTwo);
 				registerIndex++;
