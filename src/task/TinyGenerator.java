@@ -75,7 +75,16 @@ public class TinyGenerator extends TaskTemplate<ArrayList<String>,IRList>{
 	{
 		for(Entry<String, SymbolValue> entry : symbols.entrySet())
 		{
-			tinyCodes.add("var "+entry.getKey());
+			//Check if String type
+			SymbolValue val = entry.getValue();
+			if(val.getType().equals("STRING"))
+			{
+				tinyCodes.add("str "+entry.getKey()+" "+val.getValue());
+			}
+			else
+			{
+				tinyCodes.add("var "+entry.getKey());
+			}	
 		}
 	}
 
